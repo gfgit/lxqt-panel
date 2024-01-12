@@ -71,6 +71,8 @@ public:
     void setButtonPosition(LXQtFancyMenuButtonPosition pos);
     void setCategoryPosition(LXQtFancyMenuCategoryPosition pos);
 
+    void updateButtonIconSize();
+
 signals:
     void aboutToShow();
     void aboutToHide();

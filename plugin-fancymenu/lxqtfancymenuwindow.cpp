@@ -146,6 +146,7 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     mButtonsLayout->addWidget(mPowerButton);
     mMainLayout->addLayout(mButtonsLayout);
 
+    updateButtonIconSize();
 
     setMinimumHeight(500);
 
@@ -437,6 +438,14 @@ void LXQtFancyMenuWindow::setCategoryPosition(LXQtFancyMenuCategoryPosition pos)
         idx = -1;
 
     mViewLayout->insertWidget(idx, mCategoryView, CAT_VIEW_STRETCH);
+}
+
+void LXQtFancyMenuWindow::updateButtonIconSize()
+{
+    int sz = style()->pixelMetric(QStyle::PM_LargeIconSize, nullptr, mSettingsButton);
+    const QSize iconSize(sz, sz);
+    mSettingsButton->setIconSize(iconSize);
+    mPowerButton->setIconSize(iconSize);
 }
 
 QStringList LXQtFancyMenuWindow::favorites() const

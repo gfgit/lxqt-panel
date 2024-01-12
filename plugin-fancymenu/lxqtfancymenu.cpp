@@ -335,6 +335,7 @@ bool LXQtFancyMenu::eventFilter(QObject *obj, QEvent *event)
         {
             setMenuFontSize();
             setButtonIcon();
+            mWindow->updateButtonIconSize();
         }
     }
     else if(obj == mWindow)
