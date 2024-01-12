@@ -56,7 +56,14 @@ public:
 private slots:
     void activateCategory(const QModelIndex& idx);
 
+    void runPowerDialog();
+    void runSystemConfigDialog();
+
 private:
+    void runCommandHelper(const QString& cmd);
+
+private:
+    QToolButton *mSettingsButton;
     QToolButton *mPowerButton;
     QLineEdit *mSearchEdit;
     QListView *mAppView;

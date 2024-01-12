@@ -38,6 +38,10 @@
 
 #include <QBoxLayout>
 
+#include <QMessageBox>
+
+#include <QProcess>
+
 #include <QProxyStyle>
 
 namespace
@@ -67,10 +71,17 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     mSearchEdit->setPlaceholderText(tr("Search..."));
     mSearchEdit->setClearButtonEnabled(true);
 
+    mSettingsButton = new QToolButton;
+    mSettingsButton->setIcon(QIcon::fromTheme(QStringLiteral("preferences-desktop"))); //TODO: preferences-system?
+    mSettingsButton->setText(tr("Settings"));
+    mSettingsButton->setToolTip(mSettingsButton->text());
+    connect(mSettingsButton, &QToolButton::clicked, this, &LXQtFancyMenuWindow::runSystemConfigDialog);
+
     mPowerButton = new QToolButton;
     mPowerButton->setIcon(QIcon::fromTheme(QStringLiteral("system-shutdown")));
     mPowerButton->setText(tr("Leave"));
     mPowerButton->setToolTip(mPowerButton->text());
+    connect(mPowerButton, &QToolButton::clicked, this, &LXQtFancyMenuWindow::runPowerDialog);
 
     mAppView = new QListView;
     mAppView->setUniformItemSizes(true);
@@ -98,6 +109,8 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
     QHBoxLayout *buttonLayout = new QHBoxLayout;
+    buttonLayout->addStretch();
+    buttonLayout->addWidget(mSettingsButton);
     buttonLayout->addWidget(mPowerButton);
     mainLayout->addLayout(buttonLayout);
 
@@ -137,4 +150,27 @@ bool LXQtFancyMenuWindow::rebuildMenu(const XdgMenu &menu)
 void LXQtFancyMenuWindow::activateCategory(const QModelIndex &idx)
 {
     mAppModel->setCurrentCategory(idx.row());
+}
+
+void LXQtFancyMenuWindow::runPowerDialog()
+{
+    runCommandHelper(QLatin1String("lxqt-leave"));
+}
+
+void LXQtFancyMenuWindow::runSystemConfigDialog()
+{
+    runCommandHelper(QLatin1String("lxqt-config"));
+}
+
+void LXQtFancyMenuWindow::runCommandHelper(const QString &cmd)
+{
+    if(QProcess::startDetached(cmd, QStringList()))
+    {
+        hide();
+    }
+    else
+    {
+        QMessageBox::warning(this, tr("No Executable"),
+                             tr("Cannot find <b>%1</b> executable.").arg(cmd));
+    }
 }
