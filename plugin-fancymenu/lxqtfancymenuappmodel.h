@@ -46,6 +46,11 @@ public:
 
     QVariant data(const QModelIndex &idx, int role = Qt::DisplayRole) const override;
 
+    // Drag support
+    Qt::ItemFlags flags(const QModelIndex &idx) const override;
+    virtual QMimeData *mimeData(const QModelIndexList &indexes) const;
+    virtual Qt::DropActions supportedDragActions() const;
+
     void reloadAppMap(bool end);
     void setCurrentCategory(int category);
     void showSearchResults(const QVector<const LXQtFancyMenuAppItem *> &matches);

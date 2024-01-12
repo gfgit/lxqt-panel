@@ -29,6 +29,9 @@
 #include "lxqtfancymenuappmodel.h"
 #include "lxqtfancymenuappmap.h"
 
+#include <QMimeData>
+#include <QUrl>
+
 LXQtFancyMenuAppModel::LXQtFancyMenuAppModel(QObject *parent)
     : QAbstractListModel(parent)
     , mCurrentCategory(0)
@@ -76,6 +79,36 @@ QVariant LXQtFancyMenuAppModel::data(const QModelIndex &idx, int role) const
     }
 
     return QVariant();
+}
+
+Qt::ItemFlags LXQtFancyMenuAppModel::flags(const QModelIndex &idx) const
+{
+    Qt::ItemFlags f = QAbstractListModel::flags(idx);
+    if (idx.isValid())
+        f |= Qt::ItemIsDragEnabled;
+    return f;
+}
+
+QMimeData *LXQtFancyMenuAppModel::mimeData(const QModelIndexList &indexes) const
+{
+    QList<QUrl> urls;
+
+    for(const QModelIndex& idx : indexes)
+    {
+        const LXQtFancyMenuAppMap::AppItem* item = getAppAt(idx.row());
+        if(!item)
+            continue;
+        urls << QUrl::fromLocalFile(item->desktopFile);
+    }
+
+    QMimeData *mimeData = new QMimeData();
+    mimeData->setUrls(urls);
+    return mimeData;
+}
+
+Qt::DropActions LXQtFancyMenuAppModel::supportedDragActions() const
+{
+    return Qt::CopyAction | Qt::LinkAction;
 }
 
 void LXQtFancyMenuAppModel::reloadAppMap(bool end)

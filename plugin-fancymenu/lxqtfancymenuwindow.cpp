@@ -91,6 +91,7 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     mAppView = new QListView;
     mAppView->setUniformItemSizes(true);
     mAppView->setSelectionMode(QListView::SingleSelection);
+    mAppView->setDragEnabled(true);
 
     mCategoryView = new QListView;
     mCategoryView->setUniformItemSizes(true);
