@@ -167,6 +167,25 @@
     </widget>
    </item>
    <item>
+    <widget class="QGroupBox" name="popupGB">
+     <property name="title">
+      <string>Popup</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_5">
+      <item row="0" column="0">
+       <widget class="QLabel" name="buttRowPosLabel">
+        <property name="text">
+         <string>Buttons row position</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="buttRowPosCB"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>

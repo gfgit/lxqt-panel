@@ -36,6 +36,8 @@
 #include <QAction>
 #include <QFileDialog>
 
+#include "lxqtfancymenutypes.h"
+
 LXQtFancyMenuConfiguration::LXQtFancyMenuConfiguration(PluginSettings *settings, GlobalKeyShortcut::Action * shortcut, const QString &defaultShortcut, QWidget *parent) :
     LXQtPanelPluginConfigDialog(settings, parent),
     ui(new Ui::LXQtFancyMenuConfiguration),
@@ -46,6 +48,8 @@ LXQtFancyMenuConfiguration::LXQtFancyMenuConfiguration(PluginSettings *settings,
     setAttribute(Qt::WA_DeleteOnClose);
     setObjectName(QStringLiteral("FancyMenuConfigurationWindow"));
     ui->setupUi(this);
+
+    fillButtonPositionComboBox();
 
     QIcon folder{XdgIcon::fromTheme(QStringLiteral("folder"))};
     ui->chooseMenuFilePB->setIcon(folder);
@@ -84,11 +88,19 @@ LXQtFancyMenuConfiguration::LXQtFancyMenuConfiguration(PluginSettings *settings,
         if (!mLockSettingChanges)
             this->settings().setValue(QStringLiteral("filterClear"), value);
     });
+
+    connect(ui->buttRowPosCB, QOverload<int>::of(&QComboBox::activated), this, &LXQtFancyMenuConfiguration::buttonRowPositionChanged);
 }
 
 LXQtFancyMenuConfiguration::~LXQtFancyMenuConfiguration()
 {
     delete ui;
+}
+
+void LXQtFancyMenuConfiguration::fillButtonPositionComboBox()
+{
+    ui->buttRowPosCB->addItem(tr("Bottom"), LXQtFancyMenuButtonPosition::Bottom);
+    ui->buttRowPosCB->addItem(tr("Top"), LXQtFancyMenuButtonPosition::Top);
 }
 
 void LXQtFancyMenuConfiguration::loadSettings()
@@ -116,6 +128,10 @@ void LXQtFancyMenuConfiguration::loadSettings()
     lxqtSettings.endGroup();
     ui->customFontSizeSB->setValue(settings().value(QStringLiteral("customFontSize"), systemFont.pointSize()).toInt());
     ui->filterClearCB->setChecked(settings().value(QStringLiteral("filterClear"), false).toBool());
+
+    bool buttonsAtTop = settings().value(QStringLiteral("buttonsAtTop"), false).toBool();
+    int buttRowPosIdx = ui->buttRowPosCB->findData(buttonsAtTop ? LXQtFancyMenuButtonPosition::Top : LXQtFancyMenuButtonPosition::Bottom);
+    ui->buttRowPosCB->setCurrentIndex(buttRowPosIdx);
 
     mLockSettingChanges = false;
 }
@@ -189,4 +205,13 @@ void LXQtFancyMenuConfiguration::customFontSizeChanged(int value)
 {
     if (!mLockSettingChanges)
         settings().setValue(QStringLiteral("customFontSize"), value);
+}
+
+void LXQtFancyMenuConfiguration::buttonRowPositionChanged(int idx)
+{
+    if (mLockSettingChanges)
+        return;
+    LXQtFancyMenuButtonPosition pos = LXQtFancyMenuButtonPosition(this->ui->buttRowPosCB->itemData(idx).toInt());
+    bool value = (pos == LXQtFancyMenuButtonPosition::Top);
+    this->settings().setValue(QStringLiteral("buttonsAtTop"), value);
 }

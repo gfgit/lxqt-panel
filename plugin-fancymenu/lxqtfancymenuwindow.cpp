@@ -131,21 +131,22 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     connect(mAppView, &QListView::customContextMenuRequested, this, &LXQtFancyMenuWindow::onAppViewCustomMenu);
     connect(mCategoryView, &QListView::activated, this, &LXQtFancyMenuWindow::activateCategory);
 
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    mMainLayout = new QVBoxLayout(this);
 
-    QHBoxLayout *buttonLayout = new QHBoxLayout;
-    buttonLayout->addStretch();
-    buttonLayout->addWidget(mSettingsButton);
-    buttonLayout->addWidget(mPowerButton);
-    mainLayout->addLayout(buttonLayout);
-
-    mainLayout->addWidget(mSearchEdit);
+    mMainLayout->addWidget(mSearchEdit);
 
     // Use 3:2 stretch factors so app view is slightly wider than category view
     QHBoxLayout *viewLayout = new QHBoxLayout;
     viewLayout->addWidget(mAppView, 3);
     viewLayout->addWidget(mCategoryView, 2);
-    mainLayout->addLayout(viewLayout);
+    mMainLayout->addLayout(viewLayout);
+
+    mButtonsLayout = new QHBoxLayout;
+    mButtonsLayout->addStretch();
+    mButtonsLayout->addWidget(mSettingsButton);
+    mButtonsLayout->addWidget(mPowerButton);
+    mMainLayout->addLayout(mButtonsLayout);
+
 
     setMinimumHeight(500);
 
@@ -417,6 +418,16 @@ void LXQtFancyMenuWindow::setFilterClear(bool newFilterClear)
         // Apply immediately
         setSearchQuery(QString());
     }
+}
+
+void LXQtFancyMenuWindow::setButtonPosition(LXQtFancyMenuButtonPosition pos)
+{
+    mMainLayout->removeItem(mButtonsLayout);
+    int idx = 0;
+    if(pos == LXQtFancyMenuButtonPosition::Bottom)
+        idx = -1;
+
+    mMainLayout->insertLayout(idx, mButtonsLayout);
 }
 
 QStringList LXQtFancyMenuWindow::favorites() const

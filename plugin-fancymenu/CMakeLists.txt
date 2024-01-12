@@ -7,6 +7,7 @@ set(HEADERS
     lxqtfancymenuappmap.h
     lxqtfancymenuappmodel.h
     lxqtfancymenucategoriesmodel.h
+    lxqtfancymenutypes.h
 )
 
 set(SOURCES

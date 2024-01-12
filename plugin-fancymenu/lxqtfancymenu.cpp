@@ -202,6 +202,9 @@ void LXQtFancyMenu::settingsChanged()
     mFilterClear = settings()->value(QStringLiteral("filterClear"), false).toBool();
     mWindow->setFilterClear(mFilterClear);
 
+    bool buttonsAtTop = settings()->value(QStringLiteral("buttonsAtTop"), false).toBool();
+    mWindow->setButtonPosition(buttonsAtTop ? LXQtFancyMenuButtonPosition::Top : LXQtFancyMenuButtonPosition::Bottom);
+
     realign();
 }
 

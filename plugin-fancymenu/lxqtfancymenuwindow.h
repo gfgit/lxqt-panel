@@ -32,10 +32,15 @@
 #include <QWidget>
 #include <QTimer>
 
+#include "lxqtfancymenutypes.h"
+
 class QLineEdit;
 class QToolButton;
 class QListView;
 class QModelIndex;
+
+class QHBoxLayout;
+class QVBoxLayout;
 
 class XdgMenu;
 
@@ -62,6 +67,8 @@ public:
     void setFavorites(const QStringList &newFavorites);
 
     void setFilterClear(bool newFilterClear);
+
+    void setButtonPosition(LXQtFancyMenuButtonPosition pos);
 
 signals:
     void aboutToShow();
@@ -95,6 +102,8 @@ private:
 private:
     QStringList mFavorites;
 
+    QVBoxLayout *mMainLayout;
+    QHBoxLayout *mButtonsLayout;
     QToolButton *mSettingsButton;
     QToolButton *mPowerButton;
     QLineEdit *mSearchEdit;

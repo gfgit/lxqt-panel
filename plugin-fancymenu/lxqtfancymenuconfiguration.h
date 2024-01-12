@@ -54,6 +54,9 @@ public:
     ~LXQtFancyMenuConfiguration();
 
 private:
+    void fillButtonPositionComboBox();
+
+private:
     Ui::LXQtFancyMenuConfiguration *ui;
     QString mDefaultShortcut;
     GlobalKeyShortcut::Action * mShortcut;
@@ -73,6 +76,7 @@ private slots:
     void shortcutReset();
     void customFontChanged(bool value);
     void customFontSizeChanged(int value);
+    void buttonRowPositionChanged(int idx);
 };
 
 #endif // LXQTFANCYMENUCONFIGURATION_H
