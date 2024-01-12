@@ -315,6 +315,19 @@ void LXQtFancyMenuWindow::setSearchQuery(const QString &text)
     mAppModel->showSearchResults(apps);
 }
 
+void LXQtFancyMenuWindow::keyPressEvent(QKeyEvent *e)
+{
+    // If search edit is not empty, clear it instead of closing popup
+    if(!mSearchEdit->text().isEmpty() && e->matches(QKeySequence::Cancel))
+    {
+        mSearchEdit->clear();
+        e->accept();
+        return;
+    }
+
+    QWidget::keyPressEvent(e);
+}
+
 void LXQtFancyMenuWindow::runCommandHelper(const QString &cmd)
 {
     if(QProcess::startDetached(cmd, QStringList()))

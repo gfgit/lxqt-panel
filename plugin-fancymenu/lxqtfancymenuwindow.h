@@ -60,6 +60,9 @@ public:
 public slots:
     void setSearchQuery(const QString& text);
 
+protected:
+    void keyPressEvent(QKeyEvent *e);
+
 private slots:
     void activateCategory(const QModelIndex& idx);
     void activateAppAtIndex(const QModelIndex& idx);
