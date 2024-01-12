@@ -55,6 +55,7 @@ public:
 
 private:
     void fillButtonPositionComboBox();
+    void fillCategoryPositionComboBox();
 
 private:
     Ui::LXQtFancyMenuConfiguration *ui;
@@ -77,6 +78,7 @@ private slots:
     void customFontChanged(bool value);
     void customFontSizeChanged(int value);
     void buttonRowPositionChanged(int idx);
+    void categoryPositionChanged(int idx);
 };
 
 #endif // LXQTFANCYMENUCONFIGURATION_H

@@ -35,4 +35,10 @@ enum LXQtFancyMenuButtonPosition : bool
     Top = 1
 };
 
+enum LXQtFancyMenuCategoryPosition : bool
+{
+    Left = 0,
+    Right = 1
+};
+
 #endif // LXQTFANCYMENUTYPES_H

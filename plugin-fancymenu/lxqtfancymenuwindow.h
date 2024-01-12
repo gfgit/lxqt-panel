@@ -69,6 +69,7 @@ public:
     void setFilterClear(bool newFilterClear);
 
     void setButtonPosition(LXQtFancyMenuButtonPosition pos);
+    void setCategoryPosition(LXQtFancyMenuCategoryPosition pos);
 
 signals:
     void aboutToShow();
@@ -100,10 +101,16 @@ private:
     void removeFromFavorites(const QString& desktopFile);
 
 private:
+    // Use 3:2 stretch factors so app view is slightly wider than category view
+    static const int APP_VIEW_STRETCH = 3;
+    static const int CAT_VIEW_STRETCH = 2;
+
     QStringList mFavorites;
 
     QVBoxLayout *mMainLayout;
     QHBoxLayout *mButtonsLayout;
+    QHBoxLayout *mViewLayout;
+
     QToolButton *mSettingsButton;
     QToolButton *mPowerButton;
     QLineEdit *mSearchEdit;

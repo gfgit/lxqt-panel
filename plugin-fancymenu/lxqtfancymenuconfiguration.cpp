@@ -50,6 +50,7 @@ LXQtFancyMenuConfiguration::LXQtFancyMenuConfiguration(PluginSettings *settings,
     ui->setupUi(this);
 
     fillButtonPositionComboBox();
+    fillCategoryPositionComboBox();
 
     QIcon folder{XdgIcon::fromTheme(QStringLiteral("folder"))};
     ui->chooseMenuFilePB->setIcon(folder);
@@ -90,6 +91,7 @@ LXQtFancyMenuConfiguration::LXQtFancyMenuConfiguration(PluginSettings *settings,
     });
 
     connect(ui->buttRowPosCB, QOverload<int>::of(&QComboBox::activated), this, &LXQtFancyMenuConfiguration::buttonRowPositionChanged);
+    connect(ui->categoryViewPosCB, QOverload<int>::of(&QComboBox::activated), this, &LXQtFancyMenuConfiguration::categoryPositionChanged);
 }
 
 LXQtFancyMenuConfiguration::~LXQtFancyMenuConfiguration()
@@ -101,6 +103,12 @@ void LXQtFancyMenuConfiguration::fillButtonPositionComboBox()
 {
     ui->buttRowPosCB->addItem(tr("Bottom"), LXQtFancyMenuButtonPosition::Bottom);
     ui->buttRowPosCB->addItem(tr("Top"), LXQtFancyMenuButtonPosition::Top);
+}
+
+void LXQtFancyMenuConfiguration::fillCategoryPositionComboBox()
+{
+    ui->categoryViewPosCB->addItem(tr("Left"), LXQtFancyMenuCategoryPosition::Left);
+    ui->categoryViewPosCB->addItem(tr("Right"), LXQtFancyMenuCategoryPosition::Right);
 }
 
 void LXQtFancyMenuConfiguration::loadSettings()
@@ -132,6 +140,10 @@ void LXQtFancyMenuConfiguration::loadSettings()
     bool buttonsAtTop = settings().value(QStringLiteral("buttonsAtTop"), false).toBool();
     int buttRowPosIdx = ui->buttRowPosCB->findData(buttonsAtTop ? LXQtFancyMenuButtonPosition::Top : LXQtFancyMenuButtonPosition::Bottom);
     ui->buttRowPosCB->setCurrentIndex(buttRowPosIdx);
+
+    bool categoriesAtRight = settings().value(QStringLiteral("categoriesAtRight"), false).toBool();
+    int categoryPosIdx = ui->categoryViewPosCB->findData(categoriesAtRight ? LXQtFancyMenuCategoryPosition::Right : LXQtFancyMenuCategoryPosition::Left);
+    ui->categoryViewPosCB->setCurrentIndex(categoryPosIdx);
 
     mLockSettingChanges = false;
 }
@@ -214,4 +226,13 @@ void LXQtFancyMenuConfiguration::buttonRowPositionChanged(int idx)
     LXQtFancyMenuButtonPosition pos = LXQtFancyMenuButtonPosition(this->ui->buttRowPosCB->itemData(idx).toInt());
     bool value = (pos == LXQtFancyMenuButtonPosition::Top);
     this->settings().setValue(QStringLiteral("buttonsAtTop"), value);
+}
+
+void LXQtFancyMenuConfiguration::categoryPositionChanged(int idx)
+{
+    if (mLockSettingChanges)
+        return;
+    LXQtFancyMenuCategoryPosition pos = LXQtFancyMenuCategoryPosition(this->ui->categoryViewPosCB->itemData(idx).toInt());
+    bool value = (pos == LXQtFancyMenuCategoryPosition::Right);
+    this->settings().setValue(QStringLiteral("categoriesAtRight"), value);
 }

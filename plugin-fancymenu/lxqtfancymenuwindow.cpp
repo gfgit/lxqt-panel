@@ -135,11 +135,10 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
 
     mMainLayout->addWidget(mSearchEdit);
 
-    // Use 3:2 stretch factors so app view is slightly wider than category view
-    QHBoxLayout *viewLayout = new QHBoxLayout;
-    viewLayout->addWidget(mAppView, 3);
-    viewLayout->addWidget(mCategoryView, 2);
-    mMainLayout->addLayout(viewLayout);
+    mViewLayout = new QHBoxLayout;
+    mViewLayout->addWidget(mAppView, APP_VIEW_STRETCH);
+    mViewLayout->addWidget(mCategoryView, CAT_VIEW_STRETCH);
+    mMainLayout->addLayout(mViewLayout);
 
     mButtonsLayout = new QHBoxLayout;
     mButtonsLayout->addStretch();
@@ -428,6 +427,16 @@ void LXQtFancyMenuWindow::setButtonPosition(LXQtFancyMenuButtonPosition pos)
         idx = -1;
 
     mMainLayout->insertLayout(idx, mButtonsLayout);
+}
+
+void LXQtFancyMenuWindow::setCategoryPosition(LXQtFancyMenuCategoryPosition pos)
+{
+    mViewLayout->removeWidget(mCategoryView);
+    int idx = 0;
+    if(pos == LXQtFancyMenuCategoryPosition::Right)
+        idx = -1;
+
+    mViewLayout->insertWidget(idx, mCategoryView, CAT_VIEW_STRETCH);
 }
 
 QStringList LXQtFancyMenuWindow::favorites() const

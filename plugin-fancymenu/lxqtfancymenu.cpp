@@ -205,6 +205,9 @@ void LXQtFancyMenu::settingsChanged()
     bool buttonsAtTop = settings()->value(QStringLiteral("buttonsAtTop"), false).toBool();
     mWindow->setButtonPosition(buttonsAtTop ? LXQtFancyMenuButtonPosition::Top : LXQtFancyMenuButtonPosition::Bottom);
 
+    bool categoriesAtRight = settings()->value(QStringLiteral("categoriesAtRight"), true).toBool();
+    mWindow->setCategoryPosition(categoriesAtRight ? LXQtFancyMenuCategoryPosition::Right : LXQtFancyMenuCategoryPosition::Left);
+
     realign();
 }
 
