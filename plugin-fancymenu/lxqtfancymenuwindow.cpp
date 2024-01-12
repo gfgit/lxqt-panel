@@ -36,6 +36,15 @@
 #include <QToolButton>
 #include <QListView>
 
+#include <QMenu>
+#include <QStandardPaths>
+#include <QMimeData>
+#include <XdgIcon>
+#include <QFile>
+
+#include <QApplication>
+#include <QClipboard>
+
 #include <QBoxLayout>
 
 #include <QMessageBox>
@@ -92,6 +101,7 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     mAppView->setUniformItemSizes(true);
     mAppView->setSelectionMode(QListView::SingleSelection);
     mAppView->setDragEnabled(true);
+    mAppView->setContextMenuPolicy(Qt::CustomContextMenu);
 
     mCategoryView = new QListView;
     mCategoryView->setUniformItemSizes(true);
@@ -113,6 +123,7 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     mCategoryView->setModel(mCategoryModel);
 
     connect(mAppView, &QListView::activated, this, &LXQtFancyMenuWindow::activateAppAtIndex);
+    connect(mAppView, &QListView::customContextMenuRequested, this, &LXQtFancyMenuWindow::onAppViewCustomMenu);
     connect(mCategoryView, &QListView::activated, this, &LXQtFancyMenuWindow::activateCategory);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
@@ -199,6 +210,67 @@ void LXQtFancyMenuWindow::runPowerDialog()
 void LXQtFancyMenuWindow::runSystemConfigDialog()
 {
     runCommandHelper(QLatin1String("lxqt-config"));
+}
+
+void LXQtFancyMenuWindow::onAppViewCustomMenu(const QPoint& p)
+{
+    QModelIndex idx = mAppView->indexAt(p);
+    auto item = mAppModel->getAppAt(idx.row());
+    if(!item)
+        return;
+
+    XdgDesktopFile df = item->desktopFileCache;
+    QString file = df.fileName();
+
+    QMenu menu;
+    QAction *a;
+
+    if (df.actions().count() > 0 && df.type() == XdgDesktopFile::Type::ApplicationType)
+    {
+        for (int i = 0; i < df.actions().count(); ++i)
+        {
+            QString actionString(df.actions().at(i));
+            a = menu.addAction(df.actionIcon(actionString), df.actionName(actionString));
+            connect(a, &QAction::triggered, this, [this, df, actionString] {
+                df.actionActivate(actionString, QStringList());
+                hide();
+            });
+        }
+        menu.addSeparator();
+    }
+
+    a = menu.addAction(XdgIcon::fromTheme(QLatin1String("desktop")), tr("Add to desktop"));
+    connect(a, &QAction::triggered, [file] {
+        QString desktop = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+        QString desktopFile = desktop + QStringLiteral("/") + file.section(QStringLiteral("/"), -1);
+        if (QFile::exists(desktopFile))
+        {
+            QMessageBox::StandardButton btn =
+                QMessageBox::question(nullptr,
+                                      tr("Question"),
+                                      tr("A file with the same name already exists.\nDo you want to overwrite it?"));
+            if (btn == QMessageBox::No)
+                return;
+            if (!QFile::remove(desktopFile))
+            {
+                QMessageBox::warning(nullptr,
+                                     tr("Warning"),
+                                     tr("The file cannot be overwritten."));
+                return;
+            }
+        }
+        QFile::copy(file, desktopFile);
+    });
+    a = menu.addAction(XdgIcon::fromTheme(QLatin1String("edit-copy")), tr("Copy"));
+    connect(a, &QAction::triggered, this, [file] {
+        QClipboard* clipboard = QApplication::clipboard();
+        QMimeData* data = new QMimeData();
+        data->setUrls({QUrl::fromLocalFile(file)});
+        clipboard->setMimeData(data);
+    });
+
+    QPoint globalPos = mAppView->mapToGlobal(p);
+    menu.exec(globalPos);
 }
 
 void LXQtFancyMenuWindow::setCurrentCategory(int cat)

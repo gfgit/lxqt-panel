@@ -68,6 +68,8 @@ private slots:
     void runPowerDialog();
     void runSystemConfigDialog();
 
+    void onAppViewCustomMenu(const QPoint &p);
+
 private:
     void runCommandHelper(const QString& cmd);
 
