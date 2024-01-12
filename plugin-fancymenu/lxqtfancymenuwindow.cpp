@@ -91,13 +91,13 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     connect(mSearchEdit, &QLineEdit::returnPressed, this, &LXQtFancyMenuWindow::activateCurrentApp);
 
     mSettingsButton = new QToolButton;
-    mSettingsButton->setIcon(QIcon::fromTheme(QStringLiteral("preferences-desktop"))); //TODO: preferences-system?
+    mSettingsButton->setIcon(XdgIcon::fromTheme(QStringLiteral("preferences-desktop"))); //TODO: preferences-system?
     mSettingsButton->setText(tr("Settings"));
     mSettingsButton->setToolTip(mSettingsButton->text());
     connect(mSettingsButton, &QToolButton::clicked, this, &LXQtFancyMenuWindow::runSystemConfigDialog);
 
     mPowerButton = new QToolButton;
-    mPowerButton->setIcon(QIcon::fromTheme(QStringLiteral("system-shutdown")));
+    mPowerButton->setIcon(XdgIcon::fromTheme(QStringLiteral("system-shutdown")));
     mPowerButton->setText(tr("Leave"));
     mPowerButton->setToolTip(mPowerButton->text());
     connect(mPowerButton, &QToolButton::clicked, this, &LXQtFancyMenuWindow::runPowerDialog);

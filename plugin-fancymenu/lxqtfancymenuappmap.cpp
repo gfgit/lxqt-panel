@@ -29,6 +29,7 @@
 #include "lxqtfancymenuappmap.h"
 
 #include <XdgMenu>
+#include <XdgIcon>
 
 #include <QCoreApplication>
 
@@ -46,7 +47,7 @@ LXQtFancyMenuAppMap::LXQtFancyMenuAppMap()
     //Add Favorites category
     Category favorites;
     favorites.menuTitle = LXQtFancyMenuAppMapStrings::tr("Favorites");
-    favorites.icon = QIcon::fromTheme(QLatin1String("bookmarks"));
+    favorites.icon = XdgIcon::fromTheme(QLatin1String("bookmarks"));
     mCategories.append(favorites);
 }
 
@@ -85,7 +86,7 @@ bool LXQtFancyMenuAppMap::rebuildModel(const XdgMenu &menu)
     //Add All Apps category
     Category allAppsCategory;
     allAppsCategory.menuTitle = LXQtFancyMenuAppMapStrings::tr("All Applications");
-    allAppsCategory.icon = QIcon::fromTheme(QLatin1String("folder"));
+    allAppsCategory.icon = XdgIcon::fromTheme(QLatin1String("folder"));
     mCategories.append(allAppsCategory);
 
     //TODO: add separator
@@ -236,7 +237,7 @@ void LXQtFancyMenuAppMap::parseMenu(const QDomElement &menu, const QString& topL
                 item.menuName = e.attribute(QLatin1String("name"));
                 item.menuTitle = e.attribute(QLatin1Literal("title"), item.menuName);
                 QString iconName = e.attribute(QLatin1String("icon"));
-                item.icon = QIcon::fromTheme(iconName);
+                item.icon = XdgIcon::fromTheme(iconName);
                 mCategories.append(item);
 
                 //Merge sub menu to parent
