@@ -30,6 +30,7 @@
 #define LXQTFANCYMENUWINDOW_H
 
 #include <QWidget>
+#include <QTimer>
 
 class QLineEdit;
 class QToolButton;
@@ -58,6 +59,7 @@ public:
     bool eventFilter(QObject *watched, QEvent *e) override;
 
 public slots:
+    void doSearch();
     void setSearchQuery(const QString& text);
 
 protected:
@@ -86,6 +88,8 @@ private:
     LXQtFancyMenuAppMap *mAppMap;
     LXQtFancyMenuAppModel *mAppModel;
     LXQtFancyMenuCategoriesModel *mCategoryModel;
+
+    QTimer mSearchTimer;
 };
 
 #endif // LXQTFANCYMENUWINDOW_H

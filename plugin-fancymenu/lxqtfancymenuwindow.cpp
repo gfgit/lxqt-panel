@@ -79,10 +79,14 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     s->setParent(this);
     setStyle(s);
 
+    mSearchTimer.setSingleShot(true);
+    connect(&mSearchTimer, &QTimer::timeout, this, &LXQtFancyMenuWindow::doSearch);
+    mSearchTimer.setInterval(350); // typing speed (not very fast)
+
     mSearchEdit = new QLineEdit;
     mSearchEdit->setPlaceholderText(tr("Search..."));
     mSearchEdit->setClearButtonEnabled(true);
-    connect(mSearchEdit, &QLineEdit::textEdited, this, &LXQtFancyMenuWindow::setSearchQuery);
+    connect(mSearchEdit, &QLineEdit::textEdited, &mSearchTimer, qOverload<>(&QTimer::start));
     connect(mSearchEdit, &QLineEdit::returnPressed, this, &LXQtFancyMenuWindow::activateCurrentApp);
 
     mSettingsButton = new QToolButton;
@@ -296,6 +300,11 @@ bool LXQtFancyMenuWindow::eventFilter(QObject *watched, QEvent *e)
     }
 
     return QWidget::eventFilter(watched, e);
+}
+
+void LXQtFancyMenuWindow::doSearch()
+{
+    setSearchQuery(mSearchEdit->text());
 }
 
 void LXQtFancyMenuWindow::setSearchQuery(const QString &text)
