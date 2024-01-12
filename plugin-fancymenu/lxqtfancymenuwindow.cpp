@@ -34,9 +34,31 @@
 
 #include <QBoxLayout>
 
+#include <QProxyStyle>
+
+namespace
+{
+class SingleActivateStyle : public QProxyStyle
+{
+public:
+    using QProxyStyle::QProxyStyle;
+    int styleHint(StyleHint hint, const QStyleOption * option = nullptr, const QWidget * widget = nullptr, QStyleHintReturn * returnData = nullptr) const override
+    {
+        if(hint == QStyle::SH_ItemView_ActivateItemOnSingleClick)
+            return 1;
+        return QProxyStyle::styleHint(hint, option, widget, returnData);
+
+    }
+};
+}
+
 LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     : QWidget{parent, Qt::Popup}
 {
+    SingleActivateStyle *s = new SingleActivateStyle(style());
+    s->setParent(this);
+    setStyle(s);
+
     mSearchEdit = new QLineEdit;
     mSearchEdit->setPlaceholderText(tr("Search..."));
     mSearchEdit->setClearButtonEnabled(true);
