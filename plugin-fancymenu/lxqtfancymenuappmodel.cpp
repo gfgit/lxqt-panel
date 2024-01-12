@@ -31,6 +31,8 @@
 
 LXQtFancyMenuAppModel::LXQtFancyMenuAppModel(QObject *parent)
     : QAbstractListModel(parent)
+    , mCurrentCategory(0)
+    , mInSearch(false)
 {
 }
 
@@ -39,8 +41,12 @@ int LXQtFancyMenuAppModel::rowCount(const QModelIndex &p) const
     if(!mAppMap || p.isValid() || mCurrentCategory < 0 || mCurrentCategory >= mAppMap->getCategoriesCount())
         return 0;
 
+    if(mInSearch)
+        return mSearchMatches.size();
+
     if(mCurrentCategory == LXQtFancyMenuAppMap::AllAppsCategory)
         return mAppMap->getTotalAppCount(); //Special "All Applications" category
+
     return mAppMap->getCategoryAt(mCurrentCategory).apps.size();
 }
 
@@ -87,6 +93,23 @@ void LXQtFancyMenuAppModel::setCurrentCategory(int category)
     endResetModel();
 }
 
+void LXQtFancyMenuAppModel::showSearchResults(const QVector<const LXQtFancyMenuAppItem *> &matches)
+{
+    beginResetModel();
+    mSearchMatches = matches;
+    mInSearch = true;
+    endResetModel();
+}
+
+void LXQtFancyMenuAppModel::endSearch()
+{
+    beginResetModel();
+    mSearchMatches.clear();
+    mSearchMatches.squeeze();
+    mInSearch = false;
+    endResetModel();
+}
+
 LXQtFancyMenuAppMap *LXQtFancyMenuAppModel::appMap() const
 {
     return mAppMap;
@@ -101,6 +124,9 @@ const LXQtFancyMenuAppItem *LXQtFancyMenuAppModel::getAppAt(int idx) const
 {
     if(!mAppMap || idx < 0 || mCurrentCategory < 0 || mCurrentCategory >= mAppMap->getCategoriesCount())
         return nullptr;
+
+    if(mInSearch)
+        return mSearchMatches.value(idx, nullptr);
 
     if(mCurrentCategory == LXQtFancyMenuAppMap::AllAppsCategory)
         return mAppMap->getAppAt(idx); //Special "All Applications" category

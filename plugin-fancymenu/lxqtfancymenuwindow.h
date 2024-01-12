@@ -55,6 +55,9 @@ public:
 
     void setCurrentCategory(int cat);
 
+public slots:
+    void setSearchQuery(const QString& text);
+
 private slots:
     void activateCategory(const QModelIndex& idx);
     void activateAppAtIndex(const QModelIndex& idx);

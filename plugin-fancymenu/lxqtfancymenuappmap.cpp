@@ -116,6 +116,43 @@ LXQtFancyMenuAppMap::AppItem *LXQtFancyMenuAppMap::getAppAt(int index)
     return *mCachedIterator;
 }
 
+QVector<const LXQtFancyMenuAppMap::AppItem *> LXQtFancyMenuAppMap::getMatchingApps(const QString &query) const
+{
+    QVector<const AppItem *> byName;
+    QVector<const AppItem *> byKeyword;
+
+    //TODO: implement some kind of score to get better matches on top
+
+    for(const AppItem *app : qAsConst(mAppSortedByName))
+    {
+        if(app->title.contains(query))
+        {
+            byName.append(app);
+            continue;
+        }
+
+        if(app->comment.contains(query))
+        {
+            byKeyword.append(app);
+            continue;
+        }
+
+        for(const QString& key : app->keywords)
+        {
+            if(key.startsWith(query))
+            {
+                byKeyword.append(app);
+                break;
+            }
+        }
+    }
+
+    // Give priority to title matches
+    byName += byKeyword;
+
+    return byName;
+}
+
 void LXQtFancyMenuAppMap::parseMenu(const QDomElement &menu, const QString& topLevelCategory)
 {
     QDomElement e = menu.firstChildElement();

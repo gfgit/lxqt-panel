@@ -70,6 +70,7 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     mSearchEdit = new QLineEdit;
     mSearchEdit->setPlaceholderText(tr("Search..."));
     mSearchEdit->setClearButtonEnabled(true);
+    connect(mSearchEdit, &QLineEdit::textEdited, this, &LXQtFancyMenuWindow::setSearchQuery);
 
     mSettingsButton = new QToolButton;
     mSettingsButton->setIcon(QIcon::fromTheme(QStringLiteral("preferences-desktop"))); //TODO: preferences-system?
@@ -181,6 +182,24 @@ void LXQtFancyMenuWindow::setCurrentCategory(int cat)
     mCategoryView->setCurrentIndex(idx);
     mCategoryView->selectionModel()->select(idx, QItemSelectionModel::ClearAndSelect);
     mAppModel->setCurrentCategory(cat);
+    mAppModel->endSearch();
+}
+
+void LXQtFancyMenuWindow::setSearchQuery(const QString &text)
+{
+    QSignalBlocker blk(mSearchEdit);
+    mSearchEdit->setText(text);
+
+    if(text.isEmpty())
+    {
+        mAppModel->endSearch();
+        return;
+    }
+
+    setCurrentCategory(LXQtFancyMenuAppMap::AllAppsCategory);
+
+    auto apps = mAppMap->getMatchingApps(text);
+    mAppModel->showSearchResults(apps);
 }
 
 void LXQtFancyMenuWindow::runCommandHelper(const QString &cmd)

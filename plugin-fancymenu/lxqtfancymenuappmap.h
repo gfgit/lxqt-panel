@@ -81,6 +81,8 @@ public:
 
     AppItem *getAppAt(int index);
 
+    QVector<const AppItem *> getMatchingApps(const QString& query) const;
+
 private:
     void parseMenu(const QDomElement& menu, const QString &topLevelCategory);
     void parseAppLink(const QDomElement& app, const QString &topLevelCategory);

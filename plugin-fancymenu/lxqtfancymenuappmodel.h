@@ -48,6 +48,8 @@ public:
 
     void reloadAppMap(bool end);
     void setCurrentCategory(int category);
+    void showSearchResults(const QVector<const LXQtFancyMenuAppItem *> &matches);
+    void endSearch();
 
     LXQtFancyMenuAppMap *appMap() const;
     void setAppMap(LXQtFancyMenuAppMap *newAppMap);
@@ -57,6 +59,9 @@ public:
 private:
     LXQtFancyMenuAppMap *mAppMap;
     int mCurrentCategory;
+
+    QVector<const LXQtFancyMenuAppItem *> mSearchMatches;
+    bool mInSearch;
 };
 
 #endif // LXQTFANCYMENUAPPMODEL_H
