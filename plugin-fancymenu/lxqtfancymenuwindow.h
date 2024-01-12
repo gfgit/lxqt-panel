@@ -58,11 +58,16 @@ public:
 
     bool eventFilter(QObject *watched, QEvent *e) override;
 
+Q_SIGNALS:
+    void aboutToShow();
+    void aboutToHide();
+
 public slots:
     void doSearch();
     void setSearchQuery(const QString& text);
 
 protected:
+    void hideEvent(QHideEvent *e);
     void keyPressEvent(QKeyEvent *e);
 
 private slots:

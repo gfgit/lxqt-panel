@@ -324,6 +324,12 @@ void LXQtFancyMenuWindow::setSearchQuery(const QString &text)
     mAppModel->showSearchResults(apps);
 }
 
+void LXQtFancyMenuWindow::hideEvent(QHideEvent *e)
+{
+    emit aboutToHide();
+    QWidget::hideEvent(e);
+}
+
 void LXQtFancyMenuWindow::keyPressEvent(QKeyEvent *e)
 {
     // If search edit is not empty, clear it instead of closing popup
