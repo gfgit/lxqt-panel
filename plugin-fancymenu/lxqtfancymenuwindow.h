@@ -55,12 +55,15 @@ public:
 
     void setCurrentCategory(int cat);
 
+    bool eventFilter(QObject *watched, QEvent *e) override;
+
 public slots:
     void setSearchQuery(const QString& text);
 
 private slots:
     void activateCategory(const QModelIndex& idx);
     void activateAppAtIndex(const QModelIndex& idx);
+    void activateCurrentApp();
 
     void runPowerDialog();
     void runSystemConfigDialog();

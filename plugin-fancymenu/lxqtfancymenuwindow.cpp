@@ -42,6 +42,9 @@
 
 #include <QProcess>
 
+#include <QKeyEvent>
+#include <QCoreApplication>
+
 #include <QProxyStyle>
 
 namespace
@@ -71,6 +74,7 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     mSearchEdit->setPlaceholderText(tr("Search..."));
     mSearchEdit->setClearButtonEnabled(true);
     connect(mSearchEdit, &QLineEdit::textEdited, this, &LXQtFancyMenuWindow::setSearchQuery);
+    connect(mSearchEdit, &QLineEdit::returnPressed, this, &LXQtFancyMenuWindow::activateCurrentApp);
 
     mSettingsButton = new QToolButton;
     mSettingsButton->setIcon(QIcon::fromTheme(QStringLiteral("preferences-desktop"))); //TODO: preferences-system?
@@ -86,9 +90,11 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
 
     mAppView = new QListView;
     mAppView->setUniformItemSizes(true);
+    mAppView->setSelectionMode(QListView::SingleSelection);
 
     mCategoryView = new QListView;
     mCategoryView->setUniformItemSizes(true);
+    mCategoryView->setSelectionMode(QListView::SingleSelection);
 
     // Meld category view with whole popup window
     // So remove the frame and set same background as the window
@@ -125,7 +131,14 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     mainLayout->addLayout(viewLayout);
 
     setMinimumHeight(500);
+
+    // Ensure all key presses go to search box
     setFocusProxy(mSearchEdit);
+    mAppView->setFocusProxy(mSearchEdit);
+    mCategoryView->setFocusProxy(mSearchEdit);
+
+    // Filter navigation keys
+    mSearchEdit->installEventFilter(this);
 }
 
 LXQtFancyMenuWindow::~LXQtFancyMenuWindow()
@@ -161,9 +174,20 @@ void LXQtFancyMenuWindow::activateCategory(const QModelIndex &idx)
 
 void LXQtFancyMenuWindow::activateAppAtIndex(const QModelIndex &idx)
 {
+    if(!idx.isValid())
+        return;
+
     auto *app = mAppModel->getAppAt(idx.row());
+    if(!app)
+        return;
+
     app->desktopFileCache.startDetached();
     hide();
+}
+
+void LXQtFancyMenuWindow::activateCurrentApp()
+{
+    activateAppAtIndex(mAppView->currentIndex());
 }
 
 void LXQtFancyMenuWindow::runPowerDialog()
@@ -183,6 +207,22 @@ void LXQtFancyMenuWindow::setCurrentCategory(int cat)
     mCategoryView->selectionModel()->select(idx, QItemSelectionModel::ClearAndSelect);
     mAppModel->setCurrentCategory(cat);
     mAppModel->endSearch();
+}
+
+bool LXQtFancyMenuWindow::eventFilter(QObject *watched, QEvent *e)
+{
+    if(watched == mSearchEdit && e->type() == QEvent::KeyPress)
+    {
+        QKeyEvent *ev = static_cast<QKeyEvent *>(e);
+        if(ev->key() == Qt::Key_Up || ev->key() == Qt::Key_Down)
+        {
+            // Use Up/Down arrows to navigate app view
+            QCoreApplication::sendEvent(mAppView, ev);
+            return true;
+        }
+    }
+
+    return QWidget::eventFilter(watched, e);
 }
 
 void LXQtFancyMenuWindow::setSearchQuery(const QString &text)
