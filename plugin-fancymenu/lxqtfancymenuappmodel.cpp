@@ -62,7 +62,9 @@ QVariant LXQtFancyMenuAppModel::data(const QModelIndex &idx, int role) const
     case Qt::DecorationRole:
         return item->icon;
     case Qt::ToolTipRole:
+    {
         return item->comment;
+    }
     default:
         break;
     }

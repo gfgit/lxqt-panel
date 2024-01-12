@@ -124,6 +124,7 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     mainLayout->addLayout(viewLayout);
 
     setMinimumHeight(500);
+    setFocusProxy(mSearchEdit);
 }
 
 LXQtFancyMenuWindow::~LXQtFancyMenuWindow()
@@ -146,12 +147,15 @@ bool LXQtFancyMenuWindow::rebuildMenu(const XdgMenu &menu)
     mAppMap->rebuildModel(menu);
     mAppModel->reloadAppMap(true);
     mCategoryModel->reloadAppMap(true);
+
+    setCurrentCategory(LXQtFancyMenuAppMap::FavoritesCategory);
+
     return true;
 }
 
 void LXQtFancyMenuWindow::activateCategory(const QModelIndex &idx)
 {
-    mAppModel->setCurrentCategory(idx.row());
+    setCurrentCategory(idx.row());
 }
 
 void LXQtFancyMenuWindow::activateAppAtIndex(const QModelIndex &idx)
@@ -169,6 +173,14 @@ void LXQtFancyMenuWindow::runPowerDialog()
 void LXQtFancyMenuWindow::runSystemConfigDialog()
 {
     runCommandHelper(QLatin1String("lxqt-config"));
+}
+
+void LXQtFancyMenuWindow::setCurrentCategory(int cat)
+{
+    QModelIndex idx = mCategoryModel->index(cat, 0);
+    mCategoryView->setCurrentIndex(idx);
+    mCategoryView->selectionModel()->select(idx, QItemSelectionModel::ClearAndSelect);
+    mAppModel->setCurrentCategory(cat);
 }
 
 void LXQtFancyMenuWindow::runCommandHelper(const QString &cmd)

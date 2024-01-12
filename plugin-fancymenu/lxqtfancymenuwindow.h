@@ -53,6 +53,8 @@ public:
 
     bool rebuildMenu(const XdgMenu &menu);
 
+    void setCurrentCategory(int cat);
+
 private slots:
     void activateCategory(const QModelIndex& idx);
     void activateAppAtIndex(const QModelIndex& idx);
