@@ -56,6 +56,7 @@
 #include <QCoreApplication>
 
 #include <QProxyStyle>
+#include <QStyledItemDelegate>
 
 namespace
 {
@@ -71,6 +72,52 @@ public:
 
     }
 };
+
+class SeparatorDelegate : public QStyledItemDelegate
+{
+public:
+    SeparatorDelegate(QObject *parent) : QStyledItemDelegate(parent) {}
+
+    static bool isSeparator(const QModelIndex &index)
+    {
+        return index.data(LXQtFancyMenuItemIsSeparatorRole).toInt() == 1;
+    }
+
+protected:
+    void paint(QPainter *painter,
+               const QStyleOptionViewItem &option,
+               const QModelIndex &index) const override
+    {
+        if (isSeparator(index))
+        {
+            QRect rect = option.rect;
+            if (const QAbstractItemView *view = qobject_cast<const QAbstractItemView*>(option.widget))
+                rect.setWidth(view->viewport()->width());
+            QStyleOption opt;
+            opt.rect = rect;
+            option.widget->style()->drawPrimitive(QStyle::PE_IndicatorToolBarSeparator, &opt, painter, option.widget);
+        }
+        else
+        {
+            QStyledItemDelegate::paint(painter, option, index);
+        }
+    }
+
+    QSize sizeHint(const QStyleOptionViewItem &option,
+                   const QModelIndex &index) const override
+    {
+        if (isSeparator(index))
+        {
+            int pm = option.widget->style()->pixelMetric(QStyle::PM_DefaultFrameWidth,
+                                                         nullptr,
+                                                         option.widget);
+            return QSize(pm, pm);
+        }
+
+        return QStyledItemDelegate::sizeHint(option, index);
+    }
+};
+
 }
 
 LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
@@ -103,14 +150,14 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     connect(mPowerButton, &QToolButton::clicked, this, &LXQtFancyMenuWindow::runPowerDialog);
 
     mAppView = new QListView;
-    mAppView->setUniformItemSizes(true);
     mAppView->setSelectionMode(QListView::SingleSelection);
     mAppView->setDragEnabled(true);
     mAppView->setContextMenuPolicy(Qt::CustomContextMenu);
+    mAppView->setItemDelegate(new SeparatorDelegate(this));
 
     mCategoryView = new QListView;
-    mCategoryView->setUniformItemSizes(true);
     mCategoryView->setSelectionMode(QListView::SingleSelection);
+    mCategoryView->setItemDelegate(new SeparatorDelegate(this));
 
     // Meld category view with whole popup window
     // So remove the frame and set same background as the window

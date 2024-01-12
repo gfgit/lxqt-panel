@@ -59,11 +59,26 @@ QVariant LXQtFancyMenuCategoriesModel::data(const QModelIndex &idx, int role) co
         return item.menuName;
     case Qt::DecorationRole:
         return item.icon;
+    case LXQtFancyMenuItemIsSeparatorRole:
+        if(item.type == LXQtFancyMenuItemType::SeparatorItem)
+            return 1;
     default:
         break;
     }
 
     return QVariant();
+}
+
+Qt::ItemFlags LXQtFancyMenuCategoriesModel::flags(const QModelIndex &idx) const
+{
+    if (!mAppMap || !idx.isValid() || idx.row() >= mAppMap->getCategoriesCount())
+        return Qt::NoItemFlags;
+
+    const LXQtFancyMenuAppMap::Category& item = mAppMap->getCategoryAt(idx.row());
+    if(item.type == LXQtFancyMenuItemType::SeparatorItem)
+        return Qt::NoItemFlags;
+
+    return QAbstractListModel::flags(idx);
 }
 
 void LXQtFancyMenuCategoriesModel::reloadAppMap(bool end)

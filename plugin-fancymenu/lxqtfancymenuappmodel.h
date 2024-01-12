@@ -31,6 +31,8 @@
 
 #include <QAbstractListModel>
 
+#include "lxqtfancymenutypes.h"
+
 class LXQtFancyMenuAppMap;
 class LXQtFancyMenuAppItem;
 
@@ -60,6 +62,7 @@ public:
     void setAppMap(LXQtFancyMenuAppMap *newAppMap);
 
     const LXQtFancyMenuAppItem *getAppAt(int idx) const;
+    LXQtFancyMenuItemType getItemTypeAt(int idx) const;
 
 private:
     LXQtFancyMenuAppMap *mAppMap;

@@ -45,6 +45,9 @@ public:
 
     QVariant data(const QModelIndex &idx, int role = Qt::DisplayRole) const override;
 
+    // Separator support:
+    Qt::ItemFlags flags(const QModelIndex &idx) const override;
+
     void reloadAppMap(bool end);
 
     LXQtFancyMenuAppMap *appMap() const;

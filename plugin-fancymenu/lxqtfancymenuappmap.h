@@ -36,6 +36,8 @@
 
 #include <XdgDesktopFile>
 
+#include "lxqtfancymenutypes.h"
+
 class XdgMenu;
 class QDomElement;
 
@@ -65,7 +67,15 @@ public:
         QString menuName;
         QString menuTitle;
         QIcon icon;
-        QVector<AppItem *> apps;
+
+        struct Item
+        {
+            AppItem *appItem = nullptr;
+            LXQtFancyMenuItemType type = LXQtFancyMenuItemType::AppItem;
+        };
+
+        QVector<Item> apps;
+        LXQtFancyMenuItemType type;
     };
 
     LXQtFancyMenuAppMap();
@@ -92,6 +102,7 @@ public:
 private:
     void parseMenu(const QDomElement& menu, const QString &topLevelCategory);
     void parseAppLink(const QDomElement& app, const QString &topLevelCategory);
+    void parseSeparator(const QDomElement &sep, const QString &topLevelCategory);
 
     AppItem *loadAppItem(const QString& desktopFile);
 

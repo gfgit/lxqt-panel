@@ -59,8 +59,16 @@ QVariant LXQtFancyMenuAppModel::data(const QModelIndex &idx, int role) const
         return QVariant();
 
     const LXQtFancyMenuAppMap::AppItem* item = getAppAt(idx.row());
-    if(!item)
+    LXQtFancyMenuItemType type = getItemTypeAt(idx.row());
+    if(!item && type == LXQtFancyMenuItemType::AppItem)
         return QVariant();
+
+    if(!item)
+    {
+        if(role == LXQtFancyMenuItemIsSeparatorRole)
+            return 1;
+        return QVariant();
+    }
 
     switch (role)
     {
@@ -83,6 +91,11 @@ QVariant LXQtFancyMenuAppModel::data(const QModelIndex &idx, int role) const
 
 Qt::ItemFlags LXQtFancyMenuAppModel::flags(const QModelIndex &idx) const
 {
+    const LXQtFancyMenuAppMap::AppItem* item = getAppAt(idx.row());
+    LXQtFancyMenuItemType type = getItemTypeAt(idx.row());
+    if(!item || type == LXQtFancyMenuItemType::SeparatorItem)
+        return Qt::NoItemFlags;
+
     Qt::ItemFlags f = QAbstractListModel::flags(idx);
     if (idx.isValid())
         f |= Qt::ItemIsDragEnabled;
@@ -164,5 +177,29 @@ const LXQtFancyMenuAppItem *LXQtFancyMenuAppModel::getAppAt(int idx) const
     if(mCurrentCategory == LXQtFancyMenuAppMap::AllAppsCategory)
         return mAppMap->getAppAt(idx); //Special "All Applications" category
 
-    return mAppMap->getCategoryAt(mCurrentCategory).apps.value(idx, nullptr);
+    const LXQtFancyMenuAppMap::Category& cat = mAppMap->getCategoryAt(mCurrentCategory);
+    if(idx >= cat.apps.size())
+        return nullptr;
+
+    const LXQtFancyMenuAppMap::Category::Item& item = cat.apps.at(idx);
+    return item.appItem;
+}
+
+LXQtFancyMenuItemType LXQtFancyMenuAppModel::getItemTypeAt(int idx) const
+{
+    if(!mAppMap || idx < 0 || mCurrentCategory < 0 || mCurrentCategory >= mAppMap->getCategoriesCount())
+        return LXQtFancyMenuItemType::AppItem;
+
+    if(mInSearch)
+        return LXQtFancyMenuItemType::AppItem;
+
+    if(mCurrentCategory == LXQtFancyMenuAppMap::AllAppsCategory)
+        return LXQtFancyMenuItemType::AppItem; //Special "All Applications" category
+
+    const LXQtFancyMenuAppMap::Category& cat = mAppMap->getCategoryAt(mCurrentCategory);
+    if(idx >= cat.apps.size())
+        return LXQtFancyMenuItemType::AppItem;
+
+    const LXQtFancyMenuAppMap::Category::Item& item = cat.apps.at(idx);
+    return item.type;
 }
