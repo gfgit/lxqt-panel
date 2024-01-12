@@ -4,12 +4,16 @@ set(HEADERS
     lxqtfancymenu.h
     lxqtfancymenuconfiguration.h
     lxqtfancymenuwindow.h
+    lxqtfancymenuappmap.h
+    lxqtfancymenuappmodel.h
 )
 
 set(SOURCES
     lxqtfancymenu.cpp
     lxqtfancymenuconfiguration.cpp
     lxqtfancymenuwindow.cpp
+    lxqtfancymenuappmap.cpp
+    lxqtfancymenuappmodel.cpp
 )
 
 set(UIS
