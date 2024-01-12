@@ -38,6 +38,7 @@
 
 #include <QMenu>
 #include <QStandardPaths>
+#include <QDir>
 #include <QMimeData>
 #include <XdgIcon>
 #include <QFile>
@@ -265,6 +266,7 @@ void LXQtFancyMenuWindow::onAppViewCustomMenu(const QPoint& p)
         }
         QFile::copy(file, desktopFile);
     });
+
     a = menu.addAction(XdgIcon::fromTheme(QLatin1String("edit-copy")), tr("Copy"));
     connect(a, &QAction::triggered, this, [file] {
         QClipboard* clipboard = QApplication::clipboard();
@@ -272,6 +274,24 @@ void LXQtFancyMenuWindow::onAppViewCustomMenu(const QPoint& p)
         data->setUrls({QUrl::fromLocalFile(file)});
         clipboard->setMimeData(data);
     });
+
+    menu.addSeparator();
+
+    QString canonicalFile = QDir(file).canonicalPath();
+    if(mAppMap->isFavorite(canonicalFile))
+    {
+        a = menu.addAction(XdgIcon::fromTheme(QLatin1String("bookmark-remove")), tr("Remove from Favorites"));
+        connect(a, &QAction::triggered, this, [this, canonicalFile] {
+            removeFromFavorites(canonicalFile);
+        });
+    }
+    else
+    {
+        a = menu.addAction(XdgIcon::fromTheme(QLatin1String("bookmark-new")), tr("Add to Favorites"));
+        connect(a, &QAction::triggered, this, [this, canonicalFile] {
+            addToFavorites(canonicalFile);
+        });
+    }
 
     QPoint globalPos = mAppView->mapToGlobal(p);
     menu.exec(globalPos);
@@ -354,4 +374,38 @@ void LXQtFancyMenuWindow::runCommandHelper(const QString &cmd)
         QMessageBox::warning(this, tr("No Executable"),
                              tr("Cannot find <b>%1</b> executable.").arg(cmd));
     }
+}
+
+void LXQtFancyMenuWindow::addToFavorites(const QString &desktopFile)
+{
+    mFavorites.append(desktopFile);
+
+    mAppModel->reloadAppMap(false);
+    mAppMap->addToFavorites(desktopFile);
+    mAppModel->reloadAppMap(true);
+
+    emit favoritesChanged();
+}
+
+void LXQtFancyMenuWindow::removeFromFavorites(const QString &desktopFile)
+{
+    mFavorites.removeOne(desktopFile);
+    mAppModel->reloadAppMap(false);
+    mAppMap->removeFromFavorites(desktopFile);
+    mAppModel->reloadAppMap(true);
+
+    emit favoritesChanged();
+}
+
+QStringList LXQtFancyMenuWindow::favorites() const
+{
+    return mFavorites;
+}
+
+void LXQtFancyMenuWindow::setFavorites(const QStringList &newFavorites)
+{
+    mFavorites = newFavorites;
+    mAppModel->reloadAppMap(false);
+    mAppMap->setFavorites(mFavorites);
+    mAppModel->reloadAppMap(true);
 }

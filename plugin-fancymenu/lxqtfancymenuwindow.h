@@ -58,9 +58,13 @@ public:
 
     bool eventFilter(QObject *watched, QEvent *e) override;
 
-Q_SIGNALS:
+    QStringList favorites() const;
+    void setFavorites(const QStringList &newFavorites);
+
+signals:
     void aboutToShow();
     void aboutToHide();
+    void favoritesChanged();
 
 public slots:
     void doSearch();
@@ -83,7 +87,12 @@ private slots:
 private:
     void runCommandHelper(const QString& cmd);
 
+    void addToFavorites(const QString& desktopFile);
+    void removeFromFavorites(const QString& desktopFile);
+
 private:
+    QStringList mFavorites;
+
     QToolButton *mSettingsButton;
     QToolButton *mPowerButton;
     QLineEdit *mSearchEdit;

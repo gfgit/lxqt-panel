@@ -48,6 +48,8 @@
 #include <QMimeData>
 #include <XdgAction>
 
+#include <QDir>
+
 #define DEFAULT_SHORTCUT "Alt+F1"
 
 LXQtFancyMenu::LXQtFancyMenu(const ILXQtPanelPluginStartupInfo &startupInfo):
@@ -60,6 +62,7 @@ LXQtFancyMenu::LXQtFancyMenu(const ILXQtPanelPluginStartupInfo &startupInfo):
     mWindow = new LXQtFancyMenuWindow(&mButton);
     mWindow->setObjectName(QStringLiteral("TopLevelFancyMenu"));
     mWindow->installEventFilter(this);
+    connect(mWindow, &LXQtFancyMenuWindow::favoritesChanged, this, &LXQtFancyMenu::saveFavorites);
 
     mDelayedPopup.setSingleShot(true);
     mDelayedPopup.setInterval(200);
@@ -188,6 +191,7 @@ void LXQtFancyMenu::settingsChanged()
         }
     }
 
+    loadFavorites();
     setMenuFontSize();
 
     //clear the search to not leaving the menu in wrong state
@@ -204,6 +208,59 @@ void LXQtFancyMenu::buildMenu()
     mWindow->rebuildMenu(mXdgMenu);
 
     setMenuFontSize();
+}
+
+void LXQtFancyMenu::loadFavorites()
+{
+    bool listChanged = false;
+
+    const QList<QMap<QString, QVariant> > list = settings()->readArray(QStringLiteral("favorites"));
+    QStringList fileList;
+    for(const QMap<QString, QVariant>& item : list)
+    {
+        QString file = item.value(QStringLiteral("desktopFile")).toString();
+        if(file.isEmpty())
+        {
+            listChanged = true;
+            continue;
+        }
+
+        QString canonicalPath = QDir(file).canonicalPath();
+        if(canonicalPath != file)
+            listChanged = true;
+
+        if(canonicalPath.isEmpty())
+            continue;
+
+        if(fileList.contains(canonicalPath))
+        {
+            // Don't add duplicates
+            listChanged = true;
+            continue;
+        }
+
+        fileList.append(canonicalPath);
+    }
+
+    mWindow->setFavorites(fileList);
+
+    if(listChanged)
+        saveFavorites();
+}
+
+void LXQtFancyMenu::saveFavorites()
+{
+    const QStringList fileList = mWindow->favorites();
+
+    QList<QMap<QString, QVariant> > list;
+    for(const QString& file : fileList)
+    {
+        QMap<QString, QVariant> item;
+        item.insert(QStringLiteral("desktopFile"), file);
+        list.append(item);
+    }
+
+    settings()->setArray(QStringLiteral("favorites"), list);
 }
 
 /************************************************

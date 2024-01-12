@@ -93,6 +93,9 @@ protected slots:
     virtual void settingsChanged();
     void buildMenu();
 
+    void loadFavorites();
+    void saveFavorites();
+
 private slots:
     void showMenu();
     void showHideMenu();
