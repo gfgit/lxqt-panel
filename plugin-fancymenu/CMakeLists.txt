@@ -3,11 +3,13 @@ set(PLUGIN "fancymenu")
 set(HEADERS
     lxqtfancymenu.h
     lxqtfancymenuconfiguration.h
+    lxqtfancymenuwindow.h
 )
 
 set(SOURCES
     lxqtfancymenu.cpp
     lxqtfancymenuconfiguration.cpp
+    lxqtfancymenuwindow.cpp
 )
 
 set(UIS

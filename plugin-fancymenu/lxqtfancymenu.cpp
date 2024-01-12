@@ -28,6 +28,7 @@
 
 #include "lxqtfancymenu.h"
 #include "lxqtfancymenuconfiguration.h"
+#include "lxqtfancymenuwindow.h"
 #include "../panel/lxqtpanel.h"
 #include <QTimer>
 #include <QMessageBox>
@@ -52,9 +53,14 @@
 LXQtFancyMenu::LXQtFancyMenu(const ILXQtPanelPluginStartupInfo &startupInfo):
     QObject(),
     ILXQtPanelPlugin(startupInfo),
+    mWindow(nullptr),
     mShortcut(nullptr),
     mFilterClear(false)
 {
+    mWindow = new LXQtFancyMenuWindow(&mButton);
+    mWindow->setObjectName(QStringLiteral("TopLevelFancyMenu"));
+    mWindow->installEventFilter(this);
+
     mDelayedPopup.setSingleShot(true);
     mDelayedPopup.setInterval(200);
     connect(&mDelayedPopup, &QTimer::timeout, this, &LXQtFancyMenu::showHideMenu);
@@ -109,6 +115,8 @@ LXQtFancyMenu::LXQtFancyMenu(const ILXQtPanelPluginStartupInfo &startupInfo):
 LXQtFancyMenu::~LXQtFancyMenu()
 {
     mButton.parentWidget()->removeEventFilter(this);
+
+    delete mWindow;
 }
 
 
@@ -117,7 +125,10 @@ LXQtFancyMenu::~LXQtFancyMenu()
  ************************************************/
 void LXQtFancyMenu::showHideMenu()
 {
-
+    if(mWindow && mWindow->isVisible())
+        mWindow->hide();
+    else
+        showMenu();
 }
 
 /************************************************
@@ -125,7 +136,14 @@ void LXQtFancyMenu::showHideMenu()
  ************************************************/
 void LXQtFancyMenu::showMenu()
 {
+    if (!mWindow)
+        return;
 
+    willShowWindow(mWindow);
+    // Just using Qt`s activateWindow() won't work on some WMs like Kwin.
+    // Solution is to execute menu 1ms later using timer
+    mWindow->move(calculatePopupWindowPos(mWindow->sizeHint()).topLeft());
+    mWindow->show();
 }
 
 /************************************************
@@ -191,7 +209,24 @@ void LXQtFancyMenu::buildMenu()
  ************************************************/
 void LXQtFancyMenu::setMenuFontSize()
 {
+    if (!mWindow)
+        return;
 
+    QFont menuFont = mButton.font();
+    bool customFont = settings()->value(QStringLiteral("customFont"), false).toBool();
+
+    if(customFont)
+    {
+        menuFont = mWindow->font();
+        menuFont.setPointSize(settings()->value(QStringLiteral("customFontSize")).toInt());
+    }
+
+    if (mWindow->font() != menuFont)
+    {
+        mWindow->setFont(menuFont);
+    }
+
+    // FIXME: font is not really changing, what about icon sizes?
 }
 
 /************************************************
@@ -229,6 +264,49 @@ bool LXQtFancyMenu::eventFilter(QObject *obj, QEvent *event)
         {
             setMenuFontSize();
             setButtonIcon();
+        }
+    }
+    else if(obj == mWindow)
+    {
+        if(event->type() == QEvent::KeyRelease)
+        {
+            static const auto key_meta = QMetaEnum::fromType<Qt::Key>();
+            // if our shortcut key is pressed while the menu is open, close the menu
+            QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+            QFlags<Qt::KeyboardModifier> mod = keyEvent->modifiers();
+            switch (keyEvent->key())
+            {
+            case Qt::Key_Alt:
+                mod &= ~Qt::AltModifier;
+                break;
+            case Qt::Key_Control:
+                mod &= ~Qt::ControlModifier;
+                break;
+            case Qt::Key_Shift:
+                mod &= ~Qt::ShiftModifier;
+                break;
+            case Qt::Key_Super_L:
+            case Qt::Key_Super_R:
+                mod &= ~Qt::MetaModifier;
+                break;
+            }
+            const QString press = QKeySequence{static_cast<int>(mod)}.toString() % QString::fromLatin1(key_meta.valueToKey(keyEvent->key())).remove(0, 4);
+            if (press == mShortcutSeq)
+            {
+                //TODO: isn't timer already fired by hide() ???
+                mHideTimer.start();
+                mWindow->hide(); // close the app menu
+                return true;
+            }
+            //TODO: go to item which starts with pressed letter
+        }
+        else if (event->type() == QEvent::Resize)
+        {
+            QResizeEvent *e = static_cast<QResizeEvent *>(event);
+            if (e->oldSize().isValid() && e->oldSize() != e->size())
+            {
+                mWindow->move(calculatePopupWindowPos(e->size()).topLeft());
+            }
         }
     }
     return false;

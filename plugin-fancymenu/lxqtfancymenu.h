@@ -39,6 +39,7 @@
 #include <QTimer>
 #include <QKeySequence>
 
+class LXQtFancyMenuWindow;
 class LXQtBar;
 
 namespace LXQt {
@@ -76,6 +77,7 @@ private:
 private:
     QToolButton mButton;
     QString mLogDir;
+    LXQtFancyMenuWindow *mWindow;
     GlobalKeyShortcut::Action *mShortcut;
     bool mFilterClear; //!< search field should be cleared upon showing the menu
 
