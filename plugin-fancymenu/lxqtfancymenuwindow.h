@@ -55,6 +55,7 @@ public:
 
 private slots:
     void activateCategory(const QModelIndex& idx);
+    void activateAppAtIndex(const QModelIndex& idx);
 
     void runPowerDialog();
     void runSystemConfigDialog();

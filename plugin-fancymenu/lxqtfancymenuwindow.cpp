@@ -104,6 +104,7 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     mCategoryModel->setAppMap(mAppMap);
     mCategoryView->setModel(mCategoryModel);
 
+    connect(mAppView, &QListView::activated, this, &LXQtFancyMenuWindow::activateAppAtIndex);
     connect(mCategoryView, &QListView::activated, this, &LXQtFancyMenuWindow::activateCategory);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
@@ -116,9 +117,10 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
 
     mainLayout->addWidget(mSearchEdit);
 
+    // Use 3:2 stretch factors so app view is slightly wider than category view
     QHBoxLayout *viewLayout = new QHBoxLayout;
-    viewLayout->addWidget(mAppView);
-    viewLayout->addWidget(mCategoryView);
+    viewLayout->addWidget(mAppView, 3);
+    viewLayout->addWidget(mCategoryView, 2);
     mainLayout->addLayout(viewLayout);
 
     setMinimumHeight(500);
@@ -150,6 +152,13 @@ bool LXQtFancyMenuWindow::rebuildMenu(const XdgMenu &menu)
 void LXQtFancyMenuWindow::activateCategory(const QModelIndex &idx)
 {
     mAppModel->setCurrentCategory(idx.row());
+}
+
+void LXQtFancyMenuWindow::activateAppAtIndex(const QModelIndex &idx)
+{
+    auto *app = mAppModel->getAppAt(idx.row());
+    app->desktopFileCache.startDetached();
+    hide();
 }
 
 void LXQtFancyMenuWindow::runPowerDialog()
