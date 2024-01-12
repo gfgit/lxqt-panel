@@ -34,20 +34,37 @@
 class QLineEdit;
 class QToolButton;
 class QListView;
+class QModelIndex;
+
+class XdgMenu;
+
+class LXQtFancyMenuAppMap;
+class LXQtFancyMenuAppModel;
+class LXQtFancyMenuCategoriesModel;
 
 class LXQtFancyMenuWindow : public QWidget
 {
     Q_OBJECT
 public:
     explicit LXQtFancyMenuWindow(QWidget *parent = nullptr);
+    ~LXQtFancyMenuWindow();
 
     virtual QSize sizeHint() const override;
+
+    bool rebuildMenu(const XdgMenu &menu);
+
+private slots:
+    void activateCategory(const QModelIndex& idx);
 
 private:
     QToolButton *mPowerButton;
     QLineEdit *mSearchEdit;
     QListView *mAppView;
     QListView *mCategoryView;
+
+    LXQtFancyMenuAppMap *mAppMap;
+    LXQtFancyMenuAppModel *mAppModel;
+    LXQtFancyMenuCategoriesModel *mCategoryModel;
 };
 
 #endif // LXQTFANCYMENUWINDOW_H

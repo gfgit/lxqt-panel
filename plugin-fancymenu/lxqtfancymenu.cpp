@@ -201,6 +201,8 @@ void LXQtFancyMenu::settingsChanged()
  ************************************************/
 void LXQtFancyMenu::buildMenu()
 {
+    mWindow->rebuildMenu(mXdgMenu);
+
     setMenuFontSize();
 }
 

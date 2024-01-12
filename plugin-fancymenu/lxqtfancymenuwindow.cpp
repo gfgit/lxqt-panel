@@ -28,6 +28,10 @@
 
 #include "lxqtfancymenuwindow.h"
 
+#include "lxqtfancymenuappmap.h"
+#include "lxqtfancymenuappmodel.h"
+#include "lxqtfancymenucategoriesmodel.h"
+
 #include <QLineEdit>
 #include <QToolButton>
 #include <QListView>
@@ -69,7 +73,27 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     mPowerButton->setToolTip(mPowerButton->text());
 
     mAppView = new QListView;
+    mAppView->setUniformItemSizes(true);
+
     mCategoryView = new QListView;
+    mCategoryView->setUniformItemSizes(true);
+
+    // Meld category view with whole popup window
+    // So remove the frame and set same background as the window
+    mCategoryView->setFrameShape(QFrame::NoFrame);
+    mCategoryView->viewport()->setBackgroundRole(QPalette::Window);
+
+    mAppMap = new LXQtFancyMenuAppMap;
+
+    mAppModel = new LXQtFancyMenuAppModel(this);
+    mAppModel->setAppMap(mAppMap);
+    mAppView->setModel(mAppModel);
+
+    mCategoryModel = new LXQtFancyMenuCategoriesModel(this);
+    mCategoryModel->setAppMap(mAppMap);
+    mCategoryView->setModel(mCategoryModel);
+
+    connect(mCategoryView, &QListView::activated, this, &LXQtFancyMenuWindow::activateCategory);
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
@@ -83,9 +107,34 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     viewLayout->addWidget(mAppView);
     viewLayout->addWidget(mCategoryView);
     mainLayout->addLayout(viewLayout);
+
+    setMinimumHeight(500);
+}
+
+LXQtFancyMenuWindow::~LXQtFancyMenuWindow()
+{
+    mAppModel->setAppMap(nullptr);
+    mCategoryModel->setAppMap(nullptr);
+    delete mAppMap;
+    mAppMap = nullptr;
 }
 
 QSize LXQtFancyMenuWindow::sizeHint() const
 {
     return QSize(450, 550);
+}
+
+bool LXQtFancyMenuWindow::rebuildMenu(const XdgMenu &menu)
+{
+    mAppModel->reloadAppMap(false);
+    mCategoryModel->reloadAppMap(false);
+    mAppMap->rebuildModel(menu);
+    mAppModel->reloadAppMap(true);
+    mCategoryModel->reloadAppMap(true);
+    return true;
+}
+
+void LXQtFancyMenuWindow::activateCategory(const QModelIndex &idx)
+{
+    mAppModel->setCurrentCategory(idx.row());
 }
