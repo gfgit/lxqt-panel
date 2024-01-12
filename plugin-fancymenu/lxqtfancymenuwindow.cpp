@@ -303,7 +303,10 @@ void LXQtFancyMenuWindow::setCurrentCategory(int cat)
     mCategoryView->setCurrentIndex(idx);
     mCategoryView->selectionModel()->select(idx, QItemSelectionModel::ClearAndSelect);
     mAppModel->setCurrentCategory(cat);
-    mAppModel->endSearch();
+
+    // If user clicked elsewhere, reset search
+    if(cat != LXQtFancyMenuAppMap::AllAppsCategory)
+        setSearchQuery(QString());
 }
 
 bool LXQtFancyMenuWindow::eventFilter(QObject *watched, QEvent *e)
@@ -347,6 +350,14 @@ void LXQtFancyMenuWindow::setSearchQuery(const QString &text)
 void LXQtFancyMenuWindow::hideEvent(QHideEvent *e)
 {
     emit aboutToHide();
+
+    if(mFilterClear)
+        setSearchQuery(QString()); // Clear search on hide
+
+    // If search is not active, switch to Favorites
+    if(mSearchEdit->text().isEmpty())
+        setCurrentCategory(LXQtFancyMenuAppMap::FavoritesCategory);
+
     QWidget::hideEvent(e);
 }
 
@@ -395,6 +406,17 @@ void LXQtFancyMenuWindow::removeFromFavorites(const QString &desktopFile)
     mAppModel->reloadAppMap(true);
 
     emit favoritesChanged();
+}
+
+void LXQtFancyMenuWindow::setFilterClear(bool newFilterClear)
+{
+    mFilterClear = newFilterClear;
+
+    if(mFilterClear && !isVisible())
+    {
+        // Apply immediately
+        setSearchQuery(QString());
+    }
 }
 
 QStringList LXQtFancyMenuWindow::favorites() const

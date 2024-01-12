@@ -62,6 +62,8 @@ LXQtFancyMenu::LXQtFancyMenu(const ILXQtPanelPluginStartupInfo &startupInfo):
     mWindow = new LXQtFancyMenuWindow(&mButton);
     mWindow->setObjectName(QStringLiteral("TopLevelFancyMenu"));
     mWindow->installEventFilter(this);
+    connect(mWindow, &LXQtFancyMenuWindow::aboutToHide, &mHideTimer, QOverload<>::of(&QTimer::start));
+    connect(mWindow, &LXQtFancyMenuWindow::aboutToShow, &mHideTimer, &QTimer::stop);
     connect(mWindow, &LXQtFancyMenuWindow::favoritesChanged, this, &LXQtFancyMenu::saveFavorites);
 
     mDelayedPopup.setSingleShot(true);
@@ -146,6 +148,8 @@ void LXQtFancyMenu::showMenu()
     // Just using Qt`s activateWindow() won't work on some WMs like Kwin.
     // Solution is to execute menu 1ms later using timer
     mWindow->move(calculatePopupWindowPos(mWindow->sizeHint()).topLeft());
+
+    emit mWindow->aboutToShow();
     mWindow->show();
 }
 
@@ -196,6 +200,7 @@ void LXQtFancyMenu::settingsChanged()
 
     //clear the search to not leaving the menu in wrong state
     mFilterClear = settings()->value(QStringLiteral("filterClear"), false).toBool();
+    mWindow->setFilterClear(mFilterClear);
 
     realign();
 }
@@ -207,6 +212,7 @@ void LXQtFancyMenu::buildMenu()
 {
     mWindow->rebuildMenu(mXdgMenu);
 
+    mWindow->doSearch();
     setMenuFontSize();
 }
 

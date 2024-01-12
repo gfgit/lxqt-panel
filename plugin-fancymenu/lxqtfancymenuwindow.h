@@ -61,6 +61,8 @@ public:
     QStringList favorites() const;
     void setFavorites(const QStringList &newFavorites);
 
+    void setFilterClear(bool newFilterClear);
+
 signals:
     void aboutToShow();
     void aboutToHide();
@@ -104,6 +106,7 @@ private:
     LXQtFancyMenuCategoriesModel *mCategoryModel;
 
     QTimer mSearchTimer;
+    bool mFilterClear = false;
 };
 
 #endif // LXQTFANCYMENUWINDOW_H
