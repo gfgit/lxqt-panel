@@ -495,6 +495,11 @@ void LXQtFancyMenuWindow::updateButtonIconSize()
     mPowerButton->setIconSize(iconSize);
 }
 
+void LXQtFancyMenuWindow::setSearchEditFocus()
+{
+    mSearchEdit->setFocus();
+}
+
 QStringList LXQtFancyMenuWindow::favorites() const
 {
     return mFavorites;

@@ -151,6 +151,7 @@ void LXQtFancyMenu::showMenu()
 
     emit mWindow->aboutToShow();
     mWindow->show();
+    mWindow->setSearchEditFocus();
 }
 
 /************************************************

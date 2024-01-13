@@ -73,6 +73,8 @@ public:
 
     void updateButtonIconSize();
 
+    void setSearchEditFocus();
+
 signals:
     void aboutToShow();
     void aboutToHide();
