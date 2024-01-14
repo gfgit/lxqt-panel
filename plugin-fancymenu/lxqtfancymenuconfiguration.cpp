@@ -141,7 +141,7 @@ void LXQtFancyMenuConfiguration::loadSettings()
     int buttRowPosIdx = ui->buttRowPosCB->findData(buttonsAtTop ? LXQtFancyMenuButtonPosition::Top : LXQtFancyMenuButtonPosition::Bottom);
     ui->buttRowPosCB->setCurrentIndex(buttRowPosIdx);
 
-    bool categoriesAtRight = settings().value(QStringLiteral("categoriesAtRight"), false).toBool();
+    bool categoriesAtRight = settings().value(QStringLiteral("categoriesAtRight"), true).toBool();
     int categoryPosIdx = ui->categoryViewPosCB->findData(categoriesAtRight ? LXQtFancyMenuCategoryPosition::Right : LXQtFancyMenuCategoryPosition::Left);
     ui->categoryViewPosCB->setCurrentIndex(categoryPosIdx);
 
