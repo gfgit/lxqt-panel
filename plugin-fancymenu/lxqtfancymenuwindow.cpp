@@ -500,6 +500,13 @@ void LXQtFancyMenuWindow::setSearchEditFocus()
     mSearchEdit->setFocus();
 }
 
+void LXQtFancyMenuWindow::setCustomFont(const QFont &f)
+{
+    mAppView->setFont(f);
+    mCategoryView->setFont(f);
+    mSearchEdit->setFont(f);
+}
+
 QStringList LXQtFancyMenuWindow::favorites() const
 {
     return mFavorites;

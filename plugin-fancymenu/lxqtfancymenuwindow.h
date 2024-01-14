@@ -75,6 +75,8 @@ public:
 
     void setSearchEditFocus();
 
+    void setCustomFont(const QFont& f);
+
 signals:
     void aboutToShow();
     void aboutToHide();

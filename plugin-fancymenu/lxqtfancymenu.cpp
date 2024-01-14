@@ -286,19 +286,14 @@ void LXQtFancyMenu::setMenuFontSize()
 
     QFont menuFont = mButton.font();
     bool customFont = settings()->value(QStringLiteral("customFont"), false).toBool();
+    int customFontSize = settings()->value(QStringLiteral("customFontSize")).toInt();
 
     if(customFont)
     {
         menuFont = mWindow->font();
-        menuFont.setPointSize(settings()->value(QStringLiteral("customFontSize")).toInt());
+        menuFont.setPointSize(customFontSize);
+        mWindow->setCustomFont(menuFont);
     }
-
-    if (mWindow->font() != menuFont)
-    {
-        mWindow->setFont(menuFont);
-    }
-
-    // FIXME: font is not really changing, what about icon sizes?
 }
 
 /************************************************
