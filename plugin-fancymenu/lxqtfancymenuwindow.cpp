@@ -123,7 +123,7 @@ protected:
 LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
     : QWidget{parent, Qt::Popup}
 {
-    SingleActivateStyle *s = new SingleActivateStyle(style());
+    SingleActivateStyle *s = new SingleActivateStyle;
     s->setParent(this);
     setStyle(s);
 
