@@ -292,8 +292,9 @@ void LXQtFancyMenu::setMenuFontSize()
     {
         menuFont = mWindow->font();
         menuFont.setPointSize(customFontSize);
-        mWindow->setCustomFont(menuFont);
     }
+
+    mWindow->setCustomFont(menuFont);
 }
 
 /************************************************
