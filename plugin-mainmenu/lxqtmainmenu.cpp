@@ -50,11 +50,14 @@
 #ifdef HAVE_MENU_CACHE
     #include "xdgcachedmenu.h"
 #else
-    #include <QStandardPaths>
-    #include <QClipboard>
-    #include <QMimeData>
-    #include <XdgAction>
+#include <QClipboard>
 #include <QFile>
+#include <QMimeData>
+#include <QStandardPaths>
+#include <XdgAction>
+#include <chrono>
+
+using namespace std::chrono_literals;
 #endif
 
 #define DEFAULT_SHORTCUT "Alt+F1"
@@ -79,14 +82,14 @@ LXQtMainMenu::LXQtMainMenu(const ILXQtPanelPluginStartupInfo &startupInfo):
 #endif
 
     mDelayedPopup.setSingleShot(true);
-    mDelayedPopup.setInterval(200);
+    mDelayedPopup.setInterval(200ms);
     connect(&mDelayedPopup, &QTimer::timeout, this, &LXQtMainMenu::showHideMenu);
     mHideTimer.setSingleShot(true);
-    mHideTimer.setInterval(250);
+    mHideTimer.setInterval(250ms);
 
     mSearchTimer.setSingleShot(true);
     connect(&mSearchTimer, &QTimer::timeout, this, &LXQtMainMenu::searchMenu);
-    mSearchTimer.setInterval(350); // typing speed (not very fast)
+    mSearchTimer.setInterval(350ms); // typing speed (not very fast)
 
     mButton.setAutoRaise(true);
     mButton.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -256,7 +259,7 @@ void LXQtMainMenu::settingsChanged()
         connect(&mXdgMenu, &XdgMenu::changed, this, &LXQtMainMenu::buildMenu);
         if (res)
         {
-            QTimer::singleShot(1000, this, &LXQtMainMenu::buildMenu);
+            QTimer::singleShot(1s, this, &LXQtMainMenu::buildMenu);
         }
         else
         {

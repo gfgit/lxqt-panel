@@ -49,6 +49,9 @@
 #include <XdgAction>
 
 #include <QDir>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 #define DEFAULT_SHORTCUT "Alt+F1"
 
@@ -67,10 +70,10 @@ LXQtFancyMenu::LXQtFancyMenu(const ILXQtPanelPluginStartupInfo &startupInfo):
     connect(mWindow, &LXQtFancyMenuWindow::favoritesChanged, this, &LXQtFancyMenu::saveFavorites);
 
     mDelayedPopup.setSingleShot(true);
-    mDelayedPopup.setInterval(200);
+    mDelayedPopup.setInterval(200ms);
     connect(&mDelayedPopup, &QTimer::timeout, this, &LXQtFancyMenu::showHideMenu);
     mHideTimer.setSingleShot(true);
-    mHideTimer.setInterval(250);
+    mHideTimer.setInterval(250ms);
 
     mButton.setAutoRaise(true);
     mButton.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -187,7 +190,7 @@ void LXQtFancyMenu::settingsChanged()
         connect(&mXdgMenu, &XdgMenu::changed, this, &LXQtFancyMenu::buildMenu);
         if (res)
         {
-            QTimer::singleShot(1000, this, &LXQtFancyMenu::buildMenu);
+            QTimer::singleShot(1s, this, &LXQtFancyMenu::buildMenu);
         }
         else
         {

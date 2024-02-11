@@ -31,13 +31,16 @@
 #include "lxqtgrouppopup.h"
 #include "lxqttaskgroup.h"
 
-#include <QEnterEvent>
+#include <QDebug>
 #include <QDrag>
-#include <QMimeData>
+#include <QEnterEvent>
 #include <QLayout>
+#include <QMimeData>
 #include <QPainter>
 #include <QStyleOption>
-#include <QDebug>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 /************************************************
     this class is just a container of window buttons
@@ -61,7 +64,7 @@ LXQtGroupPopup::LXQtGroupPopup(LXQtTaskGroup *group):
 
     connect(&mCloseTimer, &QTimer::timeout, this, &LXQtGroupPopup::closeTimerSlot);
     mCloseTimer.setSingleShot(true);
-    mCloseTimer.setInterval(400);
+    mCloseTimer.setInterval(400ms);
 }
 
 LXQtGroupPopup::~LXQtGroupPopup() = default;

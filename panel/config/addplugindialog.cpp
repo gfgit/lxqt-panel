@@ -34,10 +34,13 @@
 #include <XdgIcon>
 #include <XdgDirs>
 
-#include <QString>
+#include <QIcon>
 #include <QLineEdit>
 #include <QListWidgetItem>
-#include <QIcon>
+#include <QString>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 #define SEARCH_ROLE  Qt::UserRole
 #define INDEX_ROLE   SEARCH_ROLE+1
@@ -64,7 +67,7 @@ AddPluginDialog::AddPluginDialog(QWidget *parent):
     filter();
 
     // search
-    mSearchTimer.setInterval(300);
+    mSearchTimer.setInterval(300ms);
     mSearchTimer.setSingleShot(true);
     connect(ui->searchEdit, &QLineEdit::textEdited,
             &mSearchTimer, static_cast<void (QTimer::*)()>(&QTimer::start));

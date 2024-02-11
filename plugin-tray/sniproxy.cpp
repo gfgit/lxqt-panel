@@ -53,6 +53,9 @@
 
 //NOTE: Xlib.h defines Bool which conflicts with QJsonValue::Type enum
 #include <X11/Xlib.h>
+#include <chrono>
+
+using namespace std::chrono_literals;
 #undef Bool
 #undef Status
 
@@ -226,7 +229,7 @@ SNIProxy::SNIProxy(xcb_window_t wid, Xcb::Atoms & atoms, QObject *parent)
     // there's no damage event for the first paint, and sometimes it's not drawn immediately
     // not ideal, but it works better than nothing
     // test with xchat before changing
-    QTimer::singleShot(500, this, &SNIProxy::update);
+    QTimer::singleShot(500ms, this, &SNIProxy::update);
 }
 
 SNIProxy::~SNIProxy()

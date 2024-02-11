@@ -27,9 +27,12 @@
  * END_COMMON_COPYRIGHT_HEADER */
 
 #include "statusnotifierwidget.h"
-#include "statusnotifierproxy.h"
-#include "../panel/pluginsettings.h"
 #include "../panel/ilxqtpanelplugin.h"
+#include "../panel/pluginsettings.h"
+#include "statusnotifierproxy.h"
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 StatusNotifierWidget::StatusNotifierWidget(ILXQtPanelPlugin *plugin, QWidget *parent) :
     QWidget(parent),
@@ -62,7 +65,7 @@ StatusNotifierWidget::StatusNotifierWidget(ILXQtPanelPlugin *plugin, QWidget *pa
 
     // The timer that hides (auto-)hidden items after 2 seconds:
     mHideTimer.setSingleShot(true);
-    mHideTimer.setInterval(2000);
+    mHideTimer.setInterval(2s);
     connect(&mHideTimer, &QTimer::timeout, this, [this] {
         mShowBtn->show();
         mForceVisible = false;

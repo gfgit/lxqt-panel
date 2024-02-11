@@ -38,8 +38,11 @@
 #include <QLocale>
 #include <QScopedArrayPointer>
 #include <QTimer>
-#include <QWheelEvent>
 #include <QToolTip>
+#include <QWheelEvent>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 
 LXQtWorldClock::LXQtWorldClock(const ILXQtPanelPluginStartupInfo &startupInfo):
@@ -155,7 +158,7 @@ void LXQtWorldClock::restartTimer()
     mTimer->stop();
     // check the time every second even if the clock doesn't show seconds
     // because otherwise, the shown time might be vey wrong after resume
-    mTimer->setInterval(1000);
+    mTimer->setInterval(1s);
 
     int delay = static_cast<int>(1000 - (static_cast<long long>(QTime::currentTime().msecsSinceStartOfDay()) % 1000));
     QTimer::singleShot(delay, Qt::PreciseTimer, this, &LXQtWorldClock::updateTimeText);

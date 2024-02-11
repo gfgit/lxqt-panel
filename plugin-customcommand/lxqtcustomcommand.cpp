@@ -27,12 +27,15 @@
 #include "custombutton.h"
 #include "lxqtcustomcommandconfiguration.h"
 
+#include <QDebug>
 #include <QProcess>
 #include <QTimer>
 #include <QVBoxLayout>
-#include <XdgIcon>
 #include <LXQt/Globals>
-#include <QDebug>
+#include <XdgIcon>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 LXQtCustomCommand::LXQtCustomCommand(const ILXQtPanelPluginStartupInfo &startupInfo):
         QObject(),
@@ -56,7 +59,7 @@ LXQtCustomCommand::LXQtCustomCommand(const ILXQtPanelPluginStartupInfo &startupI
 
     mTimer->setSingleShot(true);
     mDelayedRunTimer->setSingleShot(true);
-    mDelayedRunTimer->setInterval(500);
+    mDelayedRunTimer->setInterval(500ms);
 
     connect(mButton, &CustomButton::clicked, this, &LXQtCustomCommand::handleClick);
     connect(mButton, &CustomButton::wheelScrolled, this, &LXQtCustomCommand::handleWheelScrolled);

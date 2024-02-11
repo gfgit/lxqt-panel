@@ -60,6 +60,9 @@
 
 #include <QProxyStyle>
 #include <QStyledItemDelegate>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 namespace
 {
@@ -146,7 +149,7 @@ LXQtFancyMenuWindow::LXQtFancyMenuWindow(QWidget *parent)
 
     mSearchTimer.setSingleShot(true);
     connect(&mSearchTimer, &QTimer::timeout, this, &LXQtFancyMenuWindow::doSearch);
-    mSearchTimer.setInterval(350); // typing speed (not very fast)
+    mSearchTimer.setInterval(350ms); // typing speed (not very fast)
 
     mAutoSelTimer.setSingleShot(true);
     connect(&mAutoSelTimer, &QTimer::timeout, this, &LXQtFancyMenuWindow::autoSelect);

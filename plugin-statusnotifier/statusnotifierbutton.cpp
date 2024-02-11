@@ -30,10 +30,13 @@
 
 #include <QDir>
 #include <QFile>
-#include <dbusmenu-lxqt/dbusmenuimporter.h>
 #include "../panel/ilxqtpanelplugin.h"
 #include "sniasync.h"
 #include <XdgIcon>
+#include <chrono>
+#include <dbusmenu-lxqt/dbusmenuimporter.h>
+
+using namespace std::chrono_literals;
 
 namespace
 {
@@ -103,7 +106,7 @@ StatusNotifierButton::StatusNotifierButton(QString service, QString objectPath, 
 
     // The timer that hides an auto-hiding button after it gets attention:
     mHideTimer.setSingleShot(true);
-    mHideTimer.setInterval(300000);
+    mHideTimer.setInterval(5min);
     connect(&mHideTimer, &QTimer::timeout, this, [this] {
         hide();
         Q_EMIT attentionChanged();

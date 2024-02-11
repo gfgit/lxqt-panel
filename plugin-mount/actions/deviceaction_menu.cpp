@@ -28,6 +28,9 @@
 #include "deviceaction_menu.h"
 #include "../lxqtmountplugin.h"
 #include "../popup.h"
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 DeviceActionMenu::DeviceActionMenu(LXQtMountPlugin *plugin, QObject *parent):
     DeviceAction(plugin, parent)
@@ -35,7 +38,7 @@ DeviceActionMenu::DeviceActionMenu(LXQtMountPlugin *plugin, QObject *parent):
     mPopup = plugin->popup();
 
     mHideTimer.setSingleShot(true);
-    mHideTimer.setInterval(5000);
+    mHideTimer.setInterval(5s);
     connect(&mHideTimer, &QTimer::timeout, mPopup, &Popup::hide);
 }
 

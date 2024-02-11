@@ -25,17 +25,19 @@
  *
  * END_COMMON_COPYRIGHT_HEADER */
 
-
 #include "lxqtpanelapplication.h"
-#include "lxqtpanelapplication_p.h"
-#include "lxqtpanel.h"
-#include "config/configpaneldialog.h"
-#include <LXQt/Settings>
-#include <QtDebug>
-#include <QUuid>
-#include <QScreen>
-#include <QWindow>
 #include <QCommandLineParser>
+#include <QScreen>
+#include <QUuid>
+#include <QWindow>
+#include <QtDebug>
+#include "config/configpaneldialog.h"
+#include "lxqtpanel.h"
+#include "lxqtpanelapplication_p.h"
+#include <LXQt/Settings>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 LXQtPanelApplicationPrivate::LXQtPanelApplicationPrivate(LXQtPanelApplication *q)
     : mSettings(nullptr),
@@ -262,7 +264,7 @@ void LXQtPanelApplication::screenDestroyed(QObject* screenObj)
         }
     }
     if(reloadNeeded)
-        QTimer::singleShot(1000, this, SLOT(reloadPanelsAsNeeded()));
+        QTimer::singleShot(1s, this, SLOT(reloadPanelsAsNeeded()));
     else
         qApp->setQuitOnLastWindowClosed(true);
 }

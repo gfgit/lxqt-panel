@@ -25,9 +25,12 @@
  * END_COMMON_COPYRIGHT_HEADER */
 
 #include "desktopswitchconfiguration.h"
+#include <QTimer>
 #include "ui_desktopswitchconfiguration.h"
 #include <KX11Extras>
-#include <QTimer>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 DesktopSwitchConfiguration::DesktopSwitchConfiguration(PluginSettings *settings, QWidget *parent) :
     LXQtPanelPluginConfigDialog(settings, parent),
@@ -72,7 +75,7 @@ void DesktopSwitchConfiguration::loadDesktopsNames()
 
         // C++11 rocks!
         QTimer *timer = new QTimer(this);
-        timer->setInterval(400);
+        timer->setInterval(400ms);
         timer->setSingleShot(true);
         connect(timer, &QTimer::timeout,       this, [=] { KX11Extras::setDesktopName(i, edit->text()); });
         connect(edit,  &QLineEdit::textEdited, this, [=] { timer->start(); });

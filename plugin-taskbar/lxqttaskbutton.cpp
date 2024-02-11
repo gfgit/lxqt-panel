@@ -59,6 +59,9 @@
 
 //NOTE: Xlib.h defines Bool which conflicts with QJsonValue::Type enum
 #include <X11/Xlib.h>
+#include <chrono>
+
+using namespace std::chrono_literals;
 #undef Bool
 
 bool LXQtTaskButton::sDraggging = false;
@@ -108,11 +111,11 @@ LXQtTaskButton::LXQtTaskButton(const WId window, LXQtTaskBar * taskbar, QWidget 
     updateIcon();
 
     mDNDTimer->setSingleShot(true);
-    mDNDTimer->setInterval(700);
+    mDNDTimer->setInterval(700ms);
     connect(mDNDTimer, &QTimer::timeout, this, &LXQtTaskButton::raiseApplication);
 
     mWheelTimer->setSingleShot(true);
-    mWheelTimer->setInterval(250);
+    mWheelTimer->setInterval(250ms);
     connect(mWheelTimer, &QTimer::timeout, this, [this] {
         mWheelDelta = 0; // forget previous wheel deltas
     });

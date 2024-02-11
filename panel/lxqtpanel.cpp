@@ -48,10 +48,13 @@
 #include <XdgIcon>
 #include <XdgDirs>
 
+#include <KWindowInfo>
 #include <KWindowSystem>
 #include <KX11Extras>
 #include <NETWM>
-#include <KWindowInfo>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 // Turn on this to show the time required to load each plugin during startup
 // #define DEBUG_PLUGIN_LOADTIME

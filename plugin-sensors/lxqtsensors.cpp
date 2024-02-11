@@ -26,13 +26,16 @@
  * END_COMMON_COPYRIGHT_HEADER */
 
 #include "lxqtsensors.h"
-#include "lxqtsensorsconfiguration.h"
-#include "../panel/ilxqtpanelplugin.h"
-#include "../panel/ilxqtpanel.h"
 #include <QBoxLayout>
 #include <QDebug>
 #include <QMessageBox>
 #include <QPalette>
+#include "../panel/ilxqtpanel.h"
+#include "../panel/ilxqtpanelplugin.h"
+#include "lxqtsensorsconfiguration.h"
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 static constexpr double DEFAULT_MAX = 200; // 200 Celsius
 
@@ -108,7 +111,7 @@ LXQtSensors::LXQtSensors(ILXQtPanelPlugin *plugin, QWidget* parent):
     mUpdateSensorReadingsTimer.start(mSettings->value(QStringLiteral("updateInterval")).toInt() * 1000);
 
     // Run timer that will be showin warning
-    mWarningAboutHighTemperatureTimer.setInterval(500);
+    mWarningAboutHighTemperatureTimer.setInterval(500ms);
     connect(&mWarningAboutHighTemperatureTimer, &QTimer::timeout, this, &LXQtSensors::warningAboutHighTemperature);
     if (mSettings->value(QStringLiteral("warningAboutHighTemperature")).toBool())
     {
