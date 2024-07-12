@@ -50,7 +50,7 @@ auto findWindow(const std::vector<std::unique_ptr<LXQtTaskBarPlasmaWindow>>& win
 }
 
 LXQtWMBackend_KWinWayland::LXQtWMBackend_KWinWayland(QObject *parent) :
-    ILXQtWMBackendLibrary(parent)
+    ILXQtAbstractWMInterface(parent)
 {
     m_managment.reset(new LXQtTaskBarPlasmaWindowManagment);
     m_workspaceInfo.reset(new LXQtPlasmaWaylandWorkspaceInfo);
@@ -77,7 +77,7 @@ LXQtWMBackend_KWinWayland::LXQtWMBackend_KWinWayland(QObject *parent) :
             });
 
     connect(m_workspaceInfo.get(), &LXQtPlasmaWaylandWorkspaceInfo::numberOfDesktopsChanged,
-            this, &ILXQtTaskbarAbstractBackend::workspacesCountChanged);
+            this, &ILXQtAbstractWMInterface::workspacesCountChanged);
 
     connect(m_workspaceInfo.get(), &LXQtPlasmaWaylandWorkspaceInfo::desktopNameChanged,
             this, [this](int idx) {
